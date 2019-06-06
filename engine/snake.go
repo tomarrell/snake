@@ -15,8 +15,8 @@ type part struct {
 
 func (p *part) renderPart() {
 	tm.MoveCursor(
-		p.x+WallWidth,
-		p.y+WallWidth,
+		p.x,
+		p.y,
 	)
 	tm.Print("\xe2\x83\x9d")
 }
