@@ -1,5 +1,10 @@
 package engine
 
+import (
+	"fmt"
+	"time"
+)
+
 type KeyCode int
 
 const (
@@ -15,4 +20,13 @@ type Game struct {
 	Width     int
 	Height    int
 	inputChan chan (Command)
+}
+
+func (g *Game) Run() {
+	sleepTime := float32(1*time.Second) / float32(g.Tickrate)
+
+	for {
+		fmt.Println("Hello World: Game is running!")
+		time.Sleep(time.Duration(sleepTime))
+	}
 }

@@ -5,5 +5,10 @@ import (
 )
 
 func main() {
-	engine.NewEngine()
+	e := engine.NewEngine()
+
+	_, err := e.StartGame(e.NewGame(100, 100, 5))
+	if err != nil {
+		panic(e)
+	}
 }

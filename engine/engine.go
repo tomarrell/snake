@@ -73,6 +73,7 @@ func (e *Engine) StartGame(ID int) (chan (Command), error) {
 	}
 
 	game.inputChan = make(chan (Command))
+	game.Run()
 
 	return game.inputChan, nil
 }
