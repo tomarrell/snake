@@ -9,8 +9,11 @@ var (
 	e     *Engine
 	once  sync.Once
 	mutex sync.Mutex
+	wg    sync.WaitGroup
 )
 
+// Command is a combined input key
+// for a given game ID
 type Command struct {
 	gameID int
 	key    KeyCode
@@ -20,7 +23,13 @@ type Command struct {
 // of games being played within it
 type Engine struct {
 	inputChan chan (Command)
-	games     []Game
+	games     []*Game
+}
+
+// Start blocks the current thread the Engine
+// runs the games
+func (e *Engine) Start() {
+	wg.Wait()
 }
 
 // NewEngine constructs a new singleton instance
@@ -28,7 +37,7 @@ type Engine struct {
 func NewEngine() *Engine {
 	once.Do(func() {
 		e = &Engine{
-			games:     []Game{},
+			games:     []*Game{},
 			inputChan: nil,
 		}
 	})
@@ -49,9 +58,10 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 		width,
 		height,
 		nil,
+		false,
 	}
 
-	e.games = append(e.games, newGame)
+	e.games = append(e.games, &newGame)
 
 	return ID
 }
@@ -63,7 +73,7 @@ func (e *Engine) StartGame(ID int) (chan (Command), error) {
 
 	for _, g := range e.games {
 		if g.ID == ID {
-			game = &g
+			game = g
 			break
 		}
 	}
@@ -73,16 +83,27 @@ func (e *Engine) StartGame(ID int) (chan (Command), error) {
 	}
 
 	game.inputChan = make(chan (Command))
-	game.Run()
+	wg.Add(1)
+	go game.run(&wg)
 
 	return game.inputChan, nil
+}
+
+// EndGame stops a game with the given ID from
+// running. It however does not remove it from
+// the Engine.
+func (e *Engine) EndGame(ID int) {
+	for i := range e.games {
+		if e.games[i].ID == ID {
+			e.games[i].stop()
+		}
+	}
 }
 
 func (e *Engine) getGame(ID int) (*Game, bool) {
 	for _, g := range e.games {
 		if g.ID == ID {
-			val := &g
-			return val, true
+			return g, true
 		}
 	}
 
