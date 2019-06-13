@@ -23,7 +23,7 @@ type Command struct {
 // of games being played within it
 type Engine struct {
 	inputChan chan (Command)
-	games     []*Game
+	games     []*game
 }
 
 // Start blocks the current thread the Engine
@@ -37,7 +37,7 @@ func (e *Engine) Start() {
 func NewEngine() *Engine {
 	once.Do(func() {
 		e = &Engine{
-			games:     []*Game{},
+			games:     []*game{},
 			inputChan: nil,
 		}
 	})
@@ -51,12 +51,12 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 	defer mutex.Unlock()
 
 	ID := len(e.games)
-
-	newGame := Game{
+	newGame := game{
 		ID,
 		tickrate,
 		width,
 		height,
+		newSnake(height, width),
 		nil,
 		false,
 	}
@@ -69,16 +69,10 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 // StartGame takes a game ID, starts the game and returns
 // a channel to handle input events to the game
 func (e *Engine) StartGame(ID int) (chan (Command), error) {
-	var game *Game
+	var game *game
 
-	for _, g := range e.games {
-		if g.ID == ID {
-			game = g
-			break
-		}
-	}
-
-	if game == nil {
+	game, exists := e.getGame(ID)
+	if exists == false {
 		return nil, errors.New("no game with given ID")
 	}
 
@@ -93,16 +87,15 @@ func (e *Engine) StartGame(ID int) (chan (Command), error) {
 // running. It however does not remove it from
 // the Engine.
 func (e *Engine) EndGame(ID int) {
-	for i := range e.games {
-		if e.games[i].ID == ID {
-			e.games[i].stop()
-		}
+	game, _ := e.getGame(ID)
+	if game != nil {
+		game.stop()
 	}
 }
 
-func (e *Engine) getGame(ID int) (*Game, bool) {
+func (e *Engine) getGame(ID int) (*game, bool) {
 	for _, g := range e.games {
-		if g.ID == ID {
+		if g.id == ID {
 			return g, true
 		}
 	}

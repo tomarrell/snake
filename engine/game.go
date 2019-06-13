@@ -17,30 +17,42 @@ const (
 )
 
 // Game is the stru
-type Game struct {
-	ID        int
-	Tickrate  int
-	Width     int
-	Height    int
+type game struct {
+	id        int
+	tickrate  int
+	width     int
+	height    int
+	snake     snake
 	inputChan chan (Command)
-	End       bool
+	stopped   bool
 }
 
-func (g *Game) stop() {
-	g.End = true
+// Stop prevents further execution of the game
+func (g *game) stop() {
+	g.stopped = true
 }
 
-func (g *Game) run(wg *sync.WaitGroup) {
+// IsStopped returns wether the game is stopped
+func (g *game) isStopped() bool {
+	return g.stopped
+}
+
+func (g *game) update() {
+	g.snake.update()
+}
+
+// Run begins the main loop execution of the game
+func (g *game) run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	sleepTime := float32(1*time.Second) / float32(g.Tickrate)
+	sleepTime := float32(1*time.Second) / float32(g.tickrate)
 
 	for {
-		if g.End {
+		if g.isStopped() {
 			break
 		}
 
-		fmt.Println("New tick in game:", g.ID, "End", g.End)
+		fmt.Println("New tick in game:", g.id, "End", g.isStopped())
 		time.Sleep(time.Duration(sleepTime))
 	}
 }
