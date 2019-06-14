@@ -12,17 +12,10 @@ var (
 	wg    sync.WaitGroup
 )
 
-// Command is a combined input key
-// for a given game ID
-type Command struct {
-	gameID int
-	key    KeyCode
-}
-
 // Engine controls the entire set
 // of games being played within it
 type Engine struct {
-	inputChan chan (Command)
+	inputChan chan (KeyCode)
 	games     []*game
 }
 
@@ -59,6 +52,7 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 		newSnake(height, width),
 		nil,
 		false,
+		new(sync.Mutex),
 	}
 
 	e.games = append(e.games, &newGame)
@@ -68,19 +62,32 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 
 // StartGame takes a game ID, starts the game and returns
 // a channel to handle input events to the game
-func (e *Engine) StartGame(ID int) (chan (Command), error) {
+func (e *Engine) StartGame(ID int) error {
 	var game *game
 
 	game, exists := e.getGame(ID)
 	if exists == false {
-		return nil, errors.New("no game with given ID")
+		return errors.New("no game with given ID")
 	}
 
-	game.inputChan = make(chan (Command))
+	game.inputChan = make(chan (KeyCode))
 	wg.Add(1)
 	go game.run(&wg)
 
-	return game.inputChan, nil
+	return nil
+}
+
+// SendInput forwards the given KeyCode
+// on to the game routine
+func (e *Engine) SendInput(ID int, key KeyCode) error {
+	g, ok := e.getGame(ID)
+	if !ok {
+		return errors.New("No game found with ID")
+	}
+
+	g.inputChan <- key
+
+	return nil
 }
 
 // EndGame stops a game with the given ID from

@@ -23,22 +23,35 @@ type game struct {
 	width     int
 	height    int
 	snake     snake
-	inputChan chan (Command)
+	inputChan chan (KeyCode)
 	stopped   bool
+	*sync.Mutex
 }
 
 // Stop prevents further execution of the game
 func (g *game) stop() {
+	g.Lock()
+	defer g.Unlock()
 	g.stopped = true
 }
 
 // IsStopped returns wether the game is stopped
 func (g *game) isStopped() bool {
+	g.Lock()
+	defer g.Unlock()
 	return g.stopped
 }
 
 func (g *game) update() {
 	g.snake.update()
+}
+
+func (g *game) handleInput() {
+	select {
+	case input := <-g.inputChan:
+		fmt.Println("Got input", input)
+	default:
+	}
 }
 
 // Run begins the main loop execution of the game
@@ -52,7 +65,11 @@ func (g *game) run(wg *sync.WaitGroup) {
 			break
 		}
 
-		fmt.Println("New tick in game:", g.id, "End", g.isStopped())
+		// Handle input
+		g.handleInput()
+		// Update the position of snake based on velocity
+		g.update()
+
 		time.Sleep(time.Duration(sleepTime))
 	}
 }
