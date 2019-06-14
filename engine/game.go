@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -10,9 +9,13 @@ import (
 type KeyCode int
 
 const (
+	// KeyLeft shifts the snake to the West
 	KeyLeft KeyCode = iota
+	// KeyRight shifts the snake to the East
 	KeyRight
+	// KeyUp shifts the snake to the North
 	KeyUp
+	// KeyDown shifts the snake to the South
 	KeyDown
 )
 
@@ -49,7 +52,16 @@ func (g *game) update() {
 func (g *game) handleInput() {
 	select {
 	case input := <-g.inputChan:
-		fmt.Println("Got input", input)
+		switch input {
+		case KeyRight:
+			g.snake.right()
+		case KeyLeft:
+			g.snake.left()
+		case KeyUp:
+			g.snake.up()
+		case KeyDown:
+			g.snake.down()
+		}
 	default:
 	}
 }

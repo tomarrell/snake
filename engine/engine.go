@@ -39,11 +39,11 @@ func NewEngine() *Engine {
 }
 
 // NewGame creates a new game of snake to be run by the engine
-func (e *Engine) NewGame(height, width, tickrate int) int {
+func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	ID := len(e.games)
+	ID = len(e.games)
 	newGame := game{
 		ID,
 		tickrate,
@@ -56,8 +56,7 @@ func (e *Engine) NewGame(height, width, tickrate int) int {
 	}
 
 	e.games = append(e.games, &newGame)
-
-	return ID
+	return
 }
 
 // StartGame takes a game ID, starts the game and returns
