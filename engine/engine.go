@@ -50,6 +50,7 @@ func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
 		width,
 		height,
 		newSnake(height, width),
+		[]fruit{},
 		nil,
 		false,
 		new(sync.Mutex),

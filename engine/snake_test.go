@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEatFood(t *testing.T) {
+func TestEatFruit(t *testing.T) {
 	assert := assert.New(t)
 
 	s := newSnake(100, 100)
 	assert.Equal(s.length(), 3)
 
-	s.eatFood(2)
+	s.eatFruit(2)
 
 	assert.Equal(s.length(), 5)
 	assert.Equal(s.parts, []part{

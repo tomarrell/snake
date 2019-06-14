@@ -37,10 +37,10 @@ func (s *snake) head() part {
 	return s.parts[0]
 }
 
-func (s *snake) eatFood(foodSize int) int {
+func (s *snake) eatFruit(size fruitValue) int {
 	lastPart := s.parts[len(s.parts)-1]
 
-	for i := 0; i < foodSize; i++ {
+	for i := 0; i < int(size); i++ {
 		s.parts = append(s.parts, lastPart)
 	}
 

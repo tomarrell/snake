@@ -19,34 +19,39 @@ const (
 	KeyDown
 )
 
-// Game is the stru
 type game struct {
 	id        int
 	tickrate  int
 	width     int
 	height    int
 	snake     snake
+	fruit     []fruit
 	inputChan chan (KeyCode)
 	stopped   bool
 	*sync.Mutex
 }
 
-// Stop prevents further execution of the game
 func (g *game) stop() {
 	g.Lock()
 	defer g.Unlock()
 	g.stopped = true
 }
 
-// IsStopped returns wether the game is stopped
 func (g *game) isStopped() bool {
 	g.Lock()
 	defer g.Unlock()
 	return g.stopped
 }
 
-func (g *game) update() {
-	g.snake.update()
+func (g *game) handleCollisions() {
+	snakeHead := g.snake.head()
+
+	for i, fruit := range g.fruit {
+		if snakeHead.x == fruit.x && snakeHead.y == fruit.y {
+			g.snake.eatFruit(fruit.value)
+			g.fruit[i] = newFruit(g.width, g.height)
+		}
+	}
 }
 
 func (g *game) handleInput() {
@@ -66,7 +71,10 @@ func (g *game) handleInput() {
 	}
 }
 
-// Run begins the main loop execution of the game
+func (g *game) update() {
+	g.snake.update()
+}
+
 func (g *game) run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -77,9 +85,8 @@ func (g *game) run(wg *sync.WaitGroup) {
 			break
 		}
 
-		// Handle input
+		g.handleCollisions()
 		g.handleInput()
-		// Update the position of snake based on velocity
 		g.update()
 
 		time.Sleep(time.Duration(sleepTime))
