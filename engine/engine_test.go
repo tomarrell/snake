@@ -24,7 +24,7 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			nil,
 			nil,
 			false,
-			new(sync.Mutex),
+			new(sync.RWMutex),
 		})
 
 	game2 := e.NewGame(40, 80, 120)
@@ -41,7 +41,7 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			nil,
 			nil,
 			false,
-			new(sync.Mutex),
+			new(sync.RWMutex),
 		})
 
 	assert.Len(e.games, 2)

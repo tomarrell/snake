@@ -36,7 +36,7 @@ type game struct {
 	inputChan  chan (KeyCode)
 	outputChan chan (GameState)
 	stopped    bool
-	*sync.Mutex
+	*sync.RWMutex
 }
 
 func (g *game) stop() {
@@ -46,12 +46,15 @@ func (g *game) stop() {
 }
 
 func (g *game) isStopped() bool {
-	g.Lock()
-	defer g.Unlock()
+	g.RLock()
+	defer g.RUnlock()
 	return g.stopped
 }
 
 func (g *game) handleCollisions() {
+	g.Lock()
+	defer g.Unlock()
+
 	snakeHead := g.snake.head()
 
 	for i, fruit := range g.fruit {
@@ -80,6 +83,8 @@ func (g *game) handleInput() {
 }
 
 func (g *game) update() {
+	g.Lock()
+	defer g.Unlock()
 	g.snake.update()
 }
 

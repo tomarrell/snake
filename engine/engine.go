@@ -6,10 +6,9 @@ import (
 )
 
 var (
-	e     *Engine
-	once  sync.Once
-	mutex sync.Mutex
-	wg    sync.WaitGroup
+	e    *Engine
+	once sync.Once
+	wg   sync.WaitGroup
 )
 
 // Engine controls the entire set
@@ -40,9 +39,6 @@ func NewEngine() *Engine {
 
 // NewGame creates a new game of snake to be run by the engine
 func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
-	mutex.Lock()
-	defer mutex.Unlock()
-
 	ID = len(e.games)
 	newGame := game{
 		ID,
@@ -54,7 +50,7 @@ func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
 		nil,
 		nil,
 		false,
-		new(sync.Mutex),
+		new(sync.RWMutex),
 	}
 
 	e.games = append(e.games, &newGame)
@@ -71,7 +67,7 @@ func (e *Engine) StartGame(ID int) (chan (GameState), error) {
 		return nil, errors.New("no game with given ID")
 	}
 
-	game.inputChan = make(chan (KeyCode))
+	game.inputChan = make(chan (KeyCode), 1)
 	game.outputChan = make(chan (GameState))
 
 	wg.Add(1)
@@ -88,7 +84,21 @@ func (e *Engine) SendInput(ID int, key KeyCode) error {
 		return errors.New("No game found with ID")
 	}
 
-	g.inputChan <- key
+	g.RLock()
+	velX := g.snake.velX
+	g.RUnlock()
+
+	if velX != 0 {
+		switch key {
+		case KeyUp, KeyDown:
+			g.inputChan <- key
+		}
+	} else {
+		switch key {
+		case KeyRight, KeyLeft:
+			g.inputChan <- key
+		}
+	}
 
 	return nil
 }
