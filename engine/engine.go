@@ -52,6 +52,7 @@ func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
 		newSnake(height, width),
 		[]fruit{},
 		nil,
+		nil,
 		false,
 		new(sync.Mutex),
 	}
@@ -62,19 +63,21 @@ func (e *Engine) NewGame(height, width, tickrate int) (ID int) {
 
 // StartGame takes a game ID, starts the game and returns
 // a channel to handle input events to the game
-func (e *Engine) StartGame(ID int) error {
+func (e *Engine) StartGame(ID int) (chan (GameState), error) {
 	var game *game
 
 	game, exists := e.getGame(ID)
 	if exists == false {
-		return errors.New("no game with given ID")
+		return nil, errors.New("no game with given ID")
 	}
 
 	game.inputChan = make(chan (KeyCode))
+	game.outputChan = make(chan (GameState))
+
 	wg.Add(1)
 	go game.run(&wg)
 
-	return nil
+	return game.outputChan, nil
 }
 
 // SendInput forwards the given KeyCode

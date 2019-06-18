@@ -15,12 +15,12 @@ func TestEatFruit(t *testing.T) {
 	s.eatFruit(2)
 
 	assert.Equal(s.length(), 5)
-	assert.Equal(s.parts, []part{
-		part{3, 1},
-		part{2, 1},
-		part{1, 1},
-		part{1, 1},
-		part{1, 1},
+	assert.Equal(s.Parts, []Part{
+		Part{3, 1},
+		Part{2, 1},
+		Part{1, 1},
+		Part{1, 1},
+		Part{1, 1},
 	})
 }
 
@@ -73,17 +73,17 @@ func TestUpdate(t *testing.T) {
 	s.up()
 	s.update()
 	assert.Equal(s.velY, -1)
-	assert.Equal(s.head().x, 3)
-	assert.Equal(s.head().y, 0)
+	assert.Equal(s.head().X, 3)
+	assert.Equal(s.head().Y, 0)
 
 	s.update()
-	assert.Equal(s.head().y, 100)
+	assert.Equal(s.head().Y, 100)
 
 	s.update()
-	assert.Equal(s.head().y, 99)
+	assert.Equal(s.head().Y, 99)
 
 	s.right()
 	s.update()
-	assert.Equal(s.head().x, 4)
+	assert.Equal(s.head().X, 4)
 	assert.Equal(s.length(), 3)
 }

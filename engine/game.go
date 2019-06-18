@@ -19,15 +19,23 @@ const (
 	KeyDown
 )
 
+type GameState struct {
+	Width  int
+	Height int
+	Snake  snake
+	Fruit  []fruit
+}
+
 type game struct {
-	id        int
-	tickrate  int
-	width     int
-	height    int
-	snake     snake
-	fruit     []fruit
-	inputChan chan (KeyCode)
-	stopped   bool
+	id         int
+	tickrate   int
+	width      int
+	height     int
+	snake      snake
+	fruit      []fruit
+	inputChan  chan (KeyCode)
+	outputChan chan (GameState)
+	stopped    bool
 	*sync.Mutex
 }
 
@@ -47,7 +55,7 @@ func (g *game) handleCollisions() {
 	snakeHead := g.snake.head()
 
 	for i, fruit := range g.fruit {
-		if snakeHead.x == fruit.x && snakeHead.y == fruit.y {
+		if snakeHead.X == fruit.x && snakeHead.Y == fruit.y {
 			g.snake.eatFruit(fruit.value)
 			g.fruit[i] = newFruit(g.width, g.height)
 		}
@@ -88,6 +96,13 @@ func (g *game) run(wg *sync.WaitGroup) {
 		g.handleCollisions()
 		g.handleInput()
 		g.update()
+
+		g.outputChan <- GameState{
+			g.width,
+			g.height,
+			g.snake,
+			g.fruit,
+		}
 
 		time.Sleep(time.Duration(sleepTime))
 	}

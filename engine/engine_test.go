@@ -22,6 +22,7 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			newSnake(1, 1),
 			[]fruit{},
 			nil,
+			nil,
 			false,
 			new(sync.Mutex),
 		})
@@ -37,6 +38,7 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			40,
 			newSnake(40, 80),
 			[]fruit{},
+			nil,
 			nil,
 			false,
 			new(sync.Mutex),
