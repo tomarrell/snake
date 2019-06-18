@@ -11,8 +11,8 @@ import (
 
 func main() {
 	e := engine.NewEngine()
-	gameID := e.NewGame(100, 100, 5)
-	err := e.StartGame(gameID)
+	gameID := e.NewGame(40, 40, 5)
+	output, err := e.StartGame(gameID)
 	if err != nil {
 		panic(e)
 	}
@@ -29,6 +29,53 @@ func main() {
 	}
 
 	quit := make(chan struct{})
+	initKeyHandlers(s, e, gameID, quit)
+
+	dur := time.Duration(0)
+
+loop:
+	for {
+		select {
+		case state := <-output:
+			// fmt.Println("State:", state)
+			renderState(s, state)
+		case <-quit:
+			break loop
+		case <-time.After(time.Millisecond * 50):
+		}
+		start := time.Now()
+		dur += time.Now().Sub(start)
+	}
+
+	s.Fini()
+}
+
+func renderState(s tcell.Screen, state engine.GameState) {
+	s.Clear()
+
+	bs := tcell.StyleDefault.Background(tcell.ColorWhite)
+
+	for i := 1; i < state.Width+2; i++ {
+		s.SetCell(i, 1, bs, ' ')
+	}
+
+	for i := 1; i < state.Height+2; i++ {
+		s.SetCell(1, i, bs, ' ')
+		s.SetCell(state.Width+2, i, bs, ' ')
+	}
+
+	for i := 1; i < state.Width+3; i++ {
+		s.SetCell(i, state.Height+2, bs, ' ')
+	}
+
+	for _, part := range state.Snake.Parts {
+		s.SetCell(part.X+2, part.Y+2, tcell.StyleDefault.Background(tcell.ColorBlue), ' ')
+	}
+
+	s.Show()
+}
+
+func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan (struct{})) {
 	go func() {
 		for {
 			ev := s.PollEvent()
@@ -36,7 +83,7 @@ func main() {
 			case *tcell.EventKey:
 				switch ev.Key() {
 				case tcell.KeyEscape, tcell.KeyEnter, tcell.KeyCtrlC:
-					close(quit)
+					close(c)
 					return
 				case tcell.KeyDown:
 					e.SendInput(gameID, engine.KeyDown)
@@ -54,19 +101,4 @@ func main() {
 			}
 		}
 	}()
-
-	dur := time.Duration(0)
-
-loop:
-	for {
-		select {
-		case <-quit:
-			break loop
-		case <-time.After(time.Millisecond * 50):
-		}
-		start := time.Now()
-		dur += time.Now().Sub(start)
-	}
-
-	s.Fini()
 }
