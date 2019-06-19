@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -16,8 +17,13 @@ const (
 )
 
 func main() {
+	widthPtr := flag.Int("width", 80, "the width of the snake arena")
+	heightPtr := flag.Int("height", 40, "the height of the snake arena")
+
+	flag.Parse()
+
 	e := engine.NewEngine()
-	gameID := e.NewGame(80, 40, 10)
+	gameID := e.NewGame(*widthPtr, *heightPtr, 10)
 	output, err := e.StartGame(gameID)
 	if err != nil {
 		panic(e)
@@ -61,7 +67,7 @@ func renderState(s tcell.Screen, state engine.GameState) {
 	renderOutline(s, state)
 	renderSnake(s, state.Snake)
 	renderFruit(s, state.Fruit)
-	renderText(s, 2, 45, fmt.Sprint("Score: ", state.Score))
+	renderText(s, 2, state.Height+offset+2, fmt.Sprint("Score: ", state.Score))
 
 	s.Show()
 }
