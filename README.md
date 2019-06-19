@@ -5,6 +5,9 @@ Simulate multiple snake games in parallel as a large set of finite state machine
 
 Each game has a unique board size and tick rate. Allowing it to support games across varied clients using custom built adapters for the given interface.
 
+Demo of the term-snake adpater:
+![Term-snake](./images/term_snake_demo.gif)
+
 ## Installation
 You can build your own adapter by importing `github.com/tomarrell/snake` and then using the exported methods there to build your own adapter on top of the simulation.
 
