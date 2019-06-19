@@ -9,9 +9,15 @@ import (
 	"github.com/tomarrell/snake/engine"
 )
 
+const (
+	inset       = 1
+	borderWidth = 1
+	offset      = inset + (2 * borderWidth)
+)
+
 func main() {
 	e := engine.NewEngine()
-	gameID := e.NewGame(40, 40, 5)
+	gameID := e.NewGame(80, 40, 5)
 	output, err := e.StartGame(gameID)
 	if err != nil {
 		panic(e)
@@ -37,7 +43,6 @@ loop:
 	for {
 		select {
 		case state := <-output:
-			// fmt.Println("State:", state)
 			renderState(s, state)
 		case <-quit:
 			break loop
@@ -53,26 +58,51 @@ loop:
 func renderState(s tcell.Screen, state engine.GameState) {
 	s.Clear()
 
-	bs := tcell.StyleDefault.Background(tcell.ColorWhite)
-
-	for i := 1; i < state.Width+2; i++ {
-		s.SetCell(i, 1, bs, ' ')
-	}
-
-	for i := 1; i < state.Height+2; i++ {
-		s.SetCell(1, i, bs, ' ')
-		s.SetCell(state.Width+2, i, bs, ' ')
-	}
-
-	for i := 1; i < state.Width+3; i++ {
-		s.SetCell(i, state.Height+2, bs, ' ')
-	}
-
-	for _, part := range state.Snake.Parts {
-		s.SetCell(part.X+2, part.Y+2, tcell.StyleDefault.Background(tcell.ColorBlue), ' ')
-	}
+	renderOutline(s, state)
+	renderSnake(s, state.Snake.Parts)
+	renderText(s, 2, 45, fmt.Sprint("Score: ", state.Score))
 
 	s.Show()
+}
+
+// Render a string of text starting at x, y
+func renderText(s tcell.Screen, x, y int, text string) {
+	for i, r := range text {
+		s.SetCell(x+i, y, tcell.StyleDefault, r)
+	}
+}
+
+// Render the arena
+func renderOutline(s tcell.Screen, state engine.GameState) {
+	bs := tcell.StyleDefault.Background(tcell.ColorWhite)
+
+	// Top border
+	for i := inset; i <= state.Width+offset; i++ {
+		s.SetCell(i, inset, bs, ' ')
+	}
+
+	// Let and right borders
+	for i := inset + borderWidth; i < state.Height+offset; i++ {
+		s.SetCell(inset, i, bs, ' ')
+		s.SetCell(state.Width+offset, i, bs, ' ')
+	}
+
+	// Bottom border
+	for i := inset; i <= state.Width+offset; i++ {
+		s.SetCell(i, state.Height+offset, bs, ' ')
+	}
+}
+
+// Render the snake on screen
+func renderSnake(s tcell.Screen, snake []engine.Part) {
+	for _, part := range snake {
+		s.SetCell(
+			part.X+inset+borderWidth,
+			part.Y+inset+borderWidth,
+			tcell.StyleDefault.Background(tcell.ColorBlue),
+			' ',
+		)
+	}
 }
 
 func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan (struct{})) {
