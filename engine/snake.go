@@ -8,6 +8,7 @@ type snake struct {
 	velY   int
 }
 
+// Part is a single piece of the snake
 type Part struct {
 	X int
 	Y int

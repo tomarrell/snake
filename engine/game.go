@@ -24,6 +24,7 @@ type GameState struct {
 	Height int
 	Snake  snake
 	Fruit  []fruit
+	Score  int
 }
 
 type game struct {
@@ -33,6 +34,7 @@ type game struct {
 	height     int
 	snake      snake
 	fruit      []fruit
+	score      int
 	inputChan  chan (KeyCode)
 	outputChan chan (GameState)
 	stopped    bool
@@ -59,6 +61,7 @@ func (g *game) handleCollisions() {
 
 	for i, fruit := range g.fruit {
 		if snakeHead.X == fruit.x && snakeHead.Y == fruit.y {
+			g.score += int(fruit.value)
 			g.snake.eatFruit(fruit.value)
 			g.fruit[i] = newFruit(g.width, g.height)
 		}
@@ -107,6 +110,7 @@ func (g *game) run(wg *sync.WaitGroup) {
 			g.height,
 			g.snake,
 			g.fruit,
+			g.score,
 		}
 
 		time.Sleep(time.Duration(sleepTime))
