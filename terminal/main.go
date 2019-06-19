@@ -17,7 +17,7 @@ const (
 
 func main() {
 	e := engine.NewEngine()
-	gameID := e.NewGame(80, 40, 5)
+	gameID := e.NewGame(80, 40, 10)
 	output, err := e.StartGame(gameID)
 	if err != nil {
 		panic(e)
