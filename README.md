@@ -5,6 +5,19 @@ Simulate multiple snake games in parallel as a large set of finite state machine
 
 Each game has a unique board size and tick rate. Allowing it to support games across varied clients using custom built adapters for the given interface.
 
+## Installation
+You can build your own adapter by importing `github.com/tomarrell/snake` and then using the exported methods there to build your own adapter on top of the simulation.
+
+Alternatively, you can use one of the pre-built adapters. Currently the supported clients are:
+- Terminal
+
+In order to play around with the terminal adapter, run the following.
+```bash
+> go get github.com/tomarrell/snake/term-snake
+> term-snake
+```
+Just make sure you have your `$GOPATH` setup and `$PATH` pointing to `$GOPATH/bin`.
+
 ## TODO
 
 #### Core
