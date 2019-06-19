@@ -59,7 +59,8 @@ func renderState(s tcell.Screen, state engine.GameState) {
 	s.Clear()
 
 	renderOutline(s, state)
-	renderSnake(s, state.Snake.Parts)
+	renderSnake(s, state.Snake)
+	renderFruit(s, state.Fruit)
 	renderText(s, 2, 45, fmt.Sprint("Score: ", state.Score))
 
 	s.Show()
@@ -93,13 +94,36 @@ func renderOutline(s tcell.Screen, state engine.GameState) {
 	}
 }
 
-// Render the snake on screen
-func renderSnake(s tcell.Screen, snake []engine.Part) {
-	for _, part := range snake {
+// Render each piece of the snake
+func renderSnake(s tcell.Screen, snake engine.Snake) {
+	for _, part := range snake.Parts {
 		s.SetCell(
 			part.X+inset+borderWidth,
 			part.Y+inset+borderWidth,
 			tcell.StyleDefault.Background(tcell.ColorBlue),
+			' ',
+		)
+	}
+}
+
+// Render each fruit
+func renderFruit(s tcell.Screen, fruit []engine.Fruit) {
+	for _, f := range fruit {
+		var style tcell.Style
+
+		switch f.Value {
+		case engine.FruitPink:
+			style = tcell.StyleDefault.Background(tcell.ColorPink)
+		case engine.FruitOrange:
+			style = tcell.StyleDefault.Background(tcell.ColorOrange)
+		case engine.FruitGreen:
+			style = tcell.StyleDefault.Background(tcell.ColorGreen)
+		}
+
+		s.SetCell(
+			f.X+inset+borderWidth,
+			f.Y+inset+borderWidth,
+			style,
 			' ',
 		)
 	}
@@ -111,8 +135,14 @@ func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan (struc
 			ev := s.PollEvent()
 			switch ev := ev.(type) {
 			case *tcell.EventKey:
+				if ev.Rune() == 'q' {
+					close(c)
+					return
+				}
+
+				// Special keys
 				switch ev.Key() {
-				case tcell.KeyEscape, tcell.KeyEnter, tcell.KeyCtrlC:
+				case tcell.KeyEscape, tcell.KeyCtrlC:
 					close(c)
 					return
 				case tcell.KeyDown:
