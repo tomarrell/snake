@@ -2,7 +2,6 @@ package engine
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 )
 
@@ -40,7 +39,6 @@ func NewEngine() *Engine {
 
 // NewGame creates a new game of snake to be run by the engine
 func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
-	fmt.Println(height, width)
 	ID = len(e.games)
 	newGame := game{
 		ID,
