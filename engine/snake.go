@@ -38,7 +38,7 @@ func (s *Snake) head() Part {
 	return s.Parts[0]
 }
 
-func (s *Snake) eatFruit(size fruitValue) int {
+func (s *Snake) eatFruit(size FruitValue) int {
 	lastPart := s.Parts[len(s.Parts)-1]
 
 	for i := 0; i < int(size); i++ {
