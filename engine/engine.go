@@ -46,7 +46,7 @@ func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
 		width,
 		height,
 		newSnake(width, height),
-		[]Fruit{},
+		[]Fruit{newFruit(width, height), newFruit(width, height)},
 		0,
 		nil,
 		nil,
