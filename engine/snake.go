@@ -1,6 +1,7 @@
 package engine
 
-type snake struct {
+// Snake is... the snake.
+type Snake struct {
 	Parts  []Part
 	boundX int
 	boundY int
@@ -14,10 +15,9 @@ type Part struct {
 	Y int
 }
 
-// NewSnake creates a new snake
-func newSnake(boundX, boundY int) snake {
+func newSnake(boundX, boundY int) Snake {
 	// Start a new snake with 3 parts facing East
-	return snake{
+	return Snake{
 		[]Part{
 			Part{3, 1},
 			Part{2, 1},
@@ -30,15 +30,15 @@ func newSnake(boundX, boundY int) snake {
 	}
 }
 
-func (s *snake) length() int {
+func (s *Snake) length() int {
 	return len(s.Parts)
 }
 
-func (s *snake) head() Part {
+func (s *Snake) head() Part {
 	return s.Parts[0]
 }
 
-func (s *snake) eatFruit(size fruitValue) int {
+func (s *Snake) eatFruit(size fruitValue) int {
 	lastPart := s.Parts[len(s.Parts)-1]
 
 	for i := 0; i < int(size); i++ {
@@ -48,7 +48,7 @@ func (s *snake) eatFruit(size fruitValue) int {
 	return len(s.Parts)
 }
 
-func (s *snake) up() {
+func (s *Snake) up() {
 	if s.velY != 0 {
 		return
 	}
@@ -57,7 +57,7 @@ func (s *snake) up() {
 	s.velY = -1
 }
 
-func (s *snake) down() {
+func (s *Snake) down() {
 	if s.velY != 0 {
 		return
 	}
@@ -66,7 +66,7 @@ func (s *snake) down() {
 	s.velY = 1
 }
 
-func (s *snake) left() {
+func (s *Snake) left() {
 	if s.velX != 0 {
 		return
 	}
@@ -75,7 +75,7 @@ func (s *snake) left() {
 	s.velY = 0
 }
 
-func (s *snake) right() {
+func (s *Snake) right() {
 	if s.velX != 0 {
 		return
 	}
@@ -84,7 +84,7 @@ func (s *snake) right() {
 	s.velY = 0
 }
 
-func (s *snake) update() {
+func (s *Snake) update() {
 	newHead := s.Parts[0]
 
 	newHead.X += s.velX

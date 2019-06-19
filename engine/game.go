@@ -19,11 +19,13 @@ const (
 	KeyDown
 )
 
+// GameState represents all the information
+// returned to the client for rendering
 type GameState struct {
 	Width  int
 	Height int
-	Snake  snake
-	Fruit  []fruit
+	Snake  Snake
+	Fruit  []Fruit
 	Score  int
 }
 
@@ -32,8 +34,8 @@ type game struct {
 	tickrate   int
 	width      int
 	height     int
-	snake      snake
-	fruit      []fruit
+	snake      Snake
+	fruit      []Fruit
 	score      int
 	inputChan  chan (KeyCode)
 	outputChan chan (GameState)
@@ -60,9 +62,9 @@ func (g *game) handleCollisions() {
 	snakeHead := g.snake.head()
 
 	for i, fruit := range g.fruit {
-		if snakeHead.X == fruit.x && snakeHead.Y == fruit.y {
-			g.score += int(fruit.value)
-			g.snake.eatFruit(fruit.value)
+		if snakeHead.X == fruit.X && snakeHead.Y == fruit.Y {
+			g.score += int(fruit.Value)
+			g.snake.eatFruit(fruit.Value)
 			g.fruit[i] = newFruit(g.width, g.height)
 		}
 	}

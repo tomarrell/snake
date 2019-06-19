@@ -10,13 +10,15 @@ const (
 	fruitGreen  fruitValue = 5
 )
 
-type fruit struct {
-	value fruitValue
-	x     int
-	y     int
+// Fruit is the item which adds score and
+// length when eaten by the snake
+type Fruit struct {
+	Value fruitValue
+	X     int
+	Y     int
 }
 
-func newFruit(boundX, boundY int) fruit {
+func newFruit(boundX, boundY int) Fruit {
 	fruitValSeed := rand.Intn(10)
 	var f fruitValue
 
@@ -29,9 +31,9 @@ func newFruit(boundX, boundY int) fruit {
 		f = fruitGreen
 	}
 
-	return fruit{
-		x:     rand.Intn(boundX + 1),
-		y:     rand.Intn(boundY + 1),
-		value: f,
+	return Fruit{
+		X:     rand.Intn(boundX + 1),
+		Y:     rand.Intn(boundY + 1),
+		Value: f,
 	}
 }

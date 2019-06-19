@@ -11,7 +11,7 @@ func TestNewFruit(t *testing.T) {
 
 	f := newFruit(100, 100)
 
-	assert.True(f.x < 100)
-	assert.True(f.y < 100)
-	assert.IsType(fruitValue(0), f.value)
+	assert.True(f.X < 100)
+	assert.True(f.Y < 100)
+	assert.IsType(fruitValue(0), f.Value)
 }
