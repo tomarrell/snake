@@ -10,6 +10,7 @@ You can build your own adapter by importing `github.com/tomarrell/snake` and the
 
 Alternatively, you can use one of the pre-built adapters. Currently the supported clients are:
 - Terminal
+- Web [In Progress]
 
 In order to play around with the terminal adapter, run the following.
 ```bash
