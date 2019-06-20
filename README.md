@@ -1,11 +1,11 @@
 # Snake
-A highly parallel, abstract, ~~completely overengineered~~ snake game engine.
+A parallel, abstract, ~~completely overengineered~~ snake game engine.
 
 Simulate multiple snake games in parallel as a large set of finite state machines. Abstracted over directional input returning state changes.
 
 Each game has a unique board size and tick rate. Allowing it to support games across varied clients using custom built adapters for the given interface.
 
-Demo of the term-snake adpater:
+Demo of the [term-snake](./term-snake) adpater:
 ![Term-snake](./images/term_snake_demo.gif)
 
 ## Installation
