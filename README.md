@@ -1,5 +1,5 @@
 # Snake
-A highly parallel, abstract, ~~completely overengineered~~ snake game engine.
+A parallel, abstract, ~~completely overengineered~~ snake game engine.
 
 Simulate multiple snake games in parallel as a large set of finite state machines. Abstracted over directional input returning state changes.
 
