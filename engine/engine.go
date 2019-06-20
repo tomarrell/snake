@@ -33,6 +33,8 @@ func NewEngine() *Engine {
 		}
 	})
 
+	e.Purge()
+
 	return e
 }
 
@@ -111,6 +113,12 @@ func (e *Engine) EndGame(ID int) {
 	if game != nil {
 		game.stop()
 	}
+}
+
+// Purge destroys all the currently running games.
+// This is a completely lossy action.
+func (e *Engine) Purge() {
+	e.games = nil
 }
 
 func (e *Engine) getGame(ID int) (*game, bool) {

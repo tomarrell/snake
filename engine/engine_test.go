@@ -66,3 +66,12 @@ func TestEndGame(t *testing.T) {
 	e.EndGame(1)
 	assert.True(e.games[0].isStopped())
 }
+func TestEnginePurge(t *testing.T) {
+	assert := assert.New(t)
+	e := NewEngine()
+
+	e.NewGame(1, 1, 60)
+	e.Purge()
+
+	assert.Len(e.games, 0)
+}
