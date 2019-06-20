@@ -29,8 +29,7 @@ func (e *Engine) Start() {
 func NewEngine() *Engine {
 	once.Do(func() {
 		e = &Engine{
-			games:     []*game{},
-			inputChan: nil,
+			games: []*game{},
 		}
 	})
 
