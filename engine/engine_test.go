@@ -66,6 +66,22 @@ func TestEndGame(t *testing.T) {
 	e.EndGame(1)
 	assert.True(e.games[0].isStopped())
 }
+
+func TestGameDestroy(t *testing.T) {
+	assert := assert.New(t)
+	e := NewEngine()
+
+	g1 := e.NewGame(1, 1, 60)
+	gameToDestroy := e.NewGame(1, 1, 60)
+	g2 := e.NewGame(1, 1, 60)
+
+	e.DestroyGame(gameToDestroy)
+
+	assert.Len(e.games, 2)
+	assert.NotNil(e.getGame(g1))
+	assert.NotNil(e.getGame(g2))
+}
+
 func TestEnginePurge(t *testing.T) {
 	assert := assert.New(t)
 	e := NewEngine()

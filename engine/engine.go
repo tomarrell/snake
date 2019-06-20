@@ -115,6 +115,19 @@ func (e *Engine) EndGame(ID int) {
 	}
 }
 
+// DestroyGame stops and then removes the
+// game from the engine. Irrecoverable.
+func (e *Engine) DestroyGame(ID int) {
+	for i, g := range e.games {
+		if g.id == ID {
+			// Prevent realloc by swapping element with
+			// last and reducing length of array
+			e.games[i] = e.games[len(e.games)-1]
+			e.games = e.games[:len(e.games)-1]
+		}
+	}
+}
+
 // Purge destroys all the currently running games.
 // This is a completely lossy action.
 func (e *Engine) Purge() {
