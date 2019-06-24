@@ -24,7 +24,7 @@ func main() {
 	e := engine.NewEngine()
 	r := mux.NewRouter()
 
-	r.HandleFunc("/ws", newGameHandler(e))
+	r.HandleFunc("/ws", websocketHandler(e))
 
 	log.Println("Starting server of port", port)
 	log.Fatal(http.ListenAndServe(port, r))
@@ -32,7 +32,7 @@ func main() {
 
 // Create a new game and return the UID of the game
 // to the client.
-func newGameHandler(e *engine.Engine) httpHandler {
+func websocketHandler(e *engine.Engine) httpHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
@@ -50,14 +50,14 @@ func newGameHandler(e *engine.Engine) httpHandler {
 			_, payload, err := conn.ReadMessage()
 			if err != nil {
 				log.Println(connID, err)
-				http.Error(w, "something went wrong processing the WS message", http.StatusInternalServerError)
+				conn.WriteJSON(newAckError("unable to read message"))
 				return
 			}
 
 			val := gjson.ValidBytes(payload)
 			if !val {
 				log.Println(connID, "message is not valid json")
-				http.Error(w, "message is not valid json", http.StatusBadRequest)
+				conn.WriteJSON(newAckError("message is not valid json"))
 				return
 			}
 
@@ -73,23 +73,13 @@ func newGameHandler(e *engine.Engine) httpHandler {
 					conn.WriteJSON(newAckError("game already exists"))
 				}
 			case "destroy":
-				log.Println("got destroy")
-				if gameID != nil {
-
-				} else {
-
-				}
+				ifNotNil(gameID, e.DestroyGame)
+				conn.WriteJSON(newAckOk())
 			case "input":
 				log.Println("got input")
 			default:
 				log.Println(connID, "received message type not valid")
-				http.Error(w, "received message type not valid", http.StatusBadRequest)
-				return
-			}
-
-			if err := conn.WriteMessage(1, payload); err != nil {
-				log.Println(err)
-				http.Error(w, "something went wrong sending message", http.StatusInternalServerError)
+				conn.WriteJSON(newAckError("invalid message type"))
 				return
 			}
 		}
