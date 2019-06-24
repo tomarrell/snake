@@ -13,11 +13,28 @@ Response `Upgrade to websocket connection`
 
 ## Messages
 
+Valid types are: `new`, `destroy`, `input`, `state`.
 
-- `new`: Create a singleton game for connection and return the ID or return the ID of the existing game. This ID is a local identifier, and only used for confirmation.
+### Server Receive
+
+- `new`: Create a singleton game for connection and respond with an acknowledgement of a game being created.
 ```bash
 snd > { "type": "new" }
-rec > { "type": "id", "data": [int] }
+rec > {
+  "type": "ack",
+  "data": "ok" | "error",
+  "err"?: [error string]
+}
+```
+
+- `destroy`: End the currently running game early and remove it from the engine.
+```bash
+snd > { "type": "destroy" }
+rec > {
+  "type": "ack",
+  "data": "ok" | "error",
+  "err"?: [error string]
+}
 ```
 
 - `input`: Send an input command to the game running on the current engine.
@@ -25,6 +42,25 @@ rec > { "type": "id", "data": [int] }
 type direction = "left" | "right" | "up" | "down"
 
 snd > { "type": "input", "direction": [direction] }
+```
+
+### Client Receive
+
+- `ack`: Receive confirmation of the message being successful. Otherwise receive an error message.
+```bash
+snd > { "type": "new" }
+rec > {
+  "type": "ack",
+  "data": "ok" | "error",
+  "err"?: [error string]
+}
+
+snd > { "type": "destroy" }
+rec > {
+  "type": "ack",
+  "data": "ok" | "error",
+  "err"?: [error string]
+}
 ```
 
 - `state`: Receive the game state from the server.

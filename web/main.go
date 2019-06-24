@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/tidwall/gjson"
 	"github.com/tomarrell/snake/engine"
 )
 
@@ -38,33 +40,56 @@ func newGameHandler(e *engine.Engine) httpHandler {
 			return
 		}
 
+		connID := uuid.New().String()[:11]
+		log.Println(connID, "new connection established")
+
 		var gameID *int
 		defer ifNotNil(gameID, e.DestroyGame)
 
 		for {
-			messageType, p, err := conn.ReadMessage()
+			_, payload, err := conn.ReadMessage()
 			if err != nil {
-				log.Println(err)
+				log.Println(connID, err)
 				http.Error(w, "something went wrong processing the WS message", http.StatusInternalServerError)
 				return
 			}
-			if messageType != 1 {
-				http.Error(w, "unsupported message type, please send text", http.StatusBadRequest)
+
+			val := gjson.ValidBytes(payload)
+			if !val {
+				log.Println(connID, "message is not valid json")
+				http.Error(w, "message is not valid json", http.StatusBadRequest)
 				return
 			}
 
-			switch string(p) {
+			mtype := gjson.GetBytes(payload, "type").String()
+
+			switch mtype {
 			case "new":
-				if gameID != nil {
-					id := e.NewGame(80, 80, 10)
-					gameID = &id
+				if gameID == nil {
+					ng := e.NewGame(80, 80, 10)
+					gameID = &ng
+					conn.WriteJSON(newAckOk())
+				} else {
+					conn.WriteJSON(newAckError("game already exists"))
 				}
 			case "destroy":
+				log.Println("got destroy")
+				if gameID != nil {
+
+				} else {
+
+				}
+			case "input":
+				log.Println("got input")
+			default:
+				log.Println(connID, "received message type not valid")
+				http.Error(w, "received message type not valid", http.StatusBadRequest)
+				return
 			}
 
-			if err := conn.WriteMessage(messageType, p); err != nil {
+			if err := conn.WriteMessage(1, payload); err != nil {
 				log.Println(err)
-				http.Error(w, "something went wrong sending the WS message", http.StatusInternalServerError)
+				http.Error(w, "something went wrong sending message", http.StatusInternalServerError)
 				return
 			}
 		}
