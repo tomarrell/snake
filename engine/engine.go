@@ -61,7 +61,7 @@ func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
 
 // StartGame takes a game ID, starts the game and returns
 // a channel to handle input events to the game
-func (e *Engine) StartGame(ID int) (chan (GameState), error) {
+func (e *Engine) StartGame(ID int, outputChan chan (GameState)) (chan (GameState), error) {
 	var game *game
 
 	game, exists := e.getGame(ID)
@@ -70,7 +70,11 @@ func (e *Engine) StartGame(ID int) (chan (GameState), error) {
 	}
 
 	game.inputChan = make(chan (KeyCode), 1)
-	game.outputChan = make(chan (GameState))
+	if outputChan != nil {
+		game.outputChan = outputChan
+	} else {
+		game.outputChan = make(chan (GameState))
+	}
 
 	wg.Add(1)
 	go game.run(&wg)
