@@ -123,6 +123,7 @@ func (e *Engine) EndGame(ID int) {
 // game from the engine. Irrecoverable.
 func (e *Engine) DestroyGame(ID int) {
 	for i, g := range e.games {
+		g.stop()
 		if g.id == ID {
 			// Prevent realloc by swapping element with
 			// last and reducing length of array

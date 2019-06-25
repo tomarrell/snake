@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+  <title>Snake Web Client</title>
+</head>
+
+<body>
+  <h2>Snake client</h2>
+
+  <canvas id="snakeCanvas"></canvas>
+
+  <button id="start">Start</button>
+  <button id="stop">Stop</button>
+</body>
+
+<style>
+body {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+canvas {
+  background: red;
+  display: block;
+  margin: auto;
+  margin-bottom: 1rem;
+}
+
+button {
+  margin: auto;
+  padding: 0.5rem 1rem;
+}
+</style>
+
+<script>
+  const height = 400;
+  const width = 800;
+
+  const c = document.getElementById("snakeCanvas");
+  const ctx = c.getContext("2d");
+  c.width = width;
+  c.height = height;
+
+  const clear = () => {
+    ctx.clearRect(0, 0, c.width, c.height);
+  }
+
+  ctx.rect(0, 0, 10, 10);
+  ctx.fill(); 
+
+  //-----------
+  // Websocket
+  //-----------
+  const ws = new WebSocket("ws://" + window.location.host +"/ws");
+
+  document.getElementById("start").addEventListener("click", () => {
+    ws.send(JSON.stringify({ type: "new" }));
+  })
+
+  document.getElementById("stop").addEventListener("click", () => {
+    ws.send(JSON.stringify({ type: "destroy" }));
+  })
+
+  ws.onmessage = (e) => {
+    console.log(e.data);
+  }
+</script>

@@ -24,6 +24,9 @@ func main() {
 	e := engine.NewEngine()
 	r := mux.NewRouter()
 
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "static/index.html")
+	})
 	r.HandleFunc("/ws", websocketHandler(e))
 
 	log.Println("Starting server of port", port)
@@ -97,8 +100,10 @@ func websocketHandler(e *engine.Engine) httpHandler {
 				}
 			case "destroy":
 				if gameID != nil {
-					log.Println(connID, "game destroyed")
+					e.EndGame(*gameID)
 					e.DestroyGame(*gameID)
+					gameID = nil
+					log.Println(connID, "game destroyed")
 					writeChan <- newAckOk()
 				} else {
 					writeChan <- newAckError("no game exists, create one first with type: new")

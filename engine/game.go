@@ -22,11 +22,11 @@ const (
 // GameState represents all the information
 // returned to the client for rendering
 type GameState struct {
-	Width  int
-	Height int
-	Snake  Snake
-	Fruit  []Fruit
-	Score  int
+	Width  int     `json:"width"`
+	Height int     `json:"height"`
+	Snake  Snake   `json:"snake"`
+	Fruit  []Fruit `json:"fruit"`
+	Score  int     `json:"score"`
 }
 
 type game struct {
