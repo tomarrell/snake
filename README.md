@@ -36,7 +36,7 @@ Just make sure you have your `$GOPATH` setup and `$PATH` pointing to `$GOPATH/bi
 
 #### Adapters
 - [x] Basic terminal interface
-- [ ] Web server
+- [x] Web server
 - [ ] Leaderboard
 
 
