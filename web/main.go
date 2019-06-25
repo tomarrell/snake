@@ -58,7 +58,13 @@ func websocketHandler(e *engine.Engine) httpHandler {
 				case m := <-writeChan:
 					conn.WriteJSON(m)
 				case s := <-gsc:
-					conn.WriteJSON(s)
+					conn.WriteJSON(struct {
+						MType string           `json:"type"`
+						Data  engine.GameState `json:"data"`
+					}{
+						MType: "state",
+						Data:  s,
+					})
 				}
 			}
 		}(gameStateChan, writeChan)
