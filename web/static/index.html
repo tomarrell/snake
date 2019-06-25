@@ -22,7 +22,6 @@ h2 {
 }
 
 canvas {
-  background: red;
   display: block;
   margin: auto;
   margin-bottom: 1rem;
@@ -44,11 +43,28 @@ button {
   c.height = height;
 
   const clear = () => {
-    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, c.width, c.height);
   }
 
-  ctx.rect(0, 0, 10, 10);
-  ctx.fill(); 
+  const renderSnake = (xScale, yScale, snake) => {
+    for (part of snake.parts) {
+      ctx.fillStyle = "black";
+      ctx.fillRect(part.x * xScale, part.y * yScale, xScale, yScale);
+    }
+  }
+
+  const renderFruit = (xScale, yScale, fruits) => {
+  }
+
+  const renderState = (state) => {
+    const xScale = Math.floor(width / state.width);
+    const yScale = Math.floor(height / state.height);
+
+    clear()
+    renderSnake(xScale, yScale, state.snake);
+    renderFruit(xScale, yScale, state.fruit);
+  }
 
   //-----------
   // Websocket
@@ -56,7 +72,7 @@ button {
   const ws = new WebSocket("ws://" + window.location.host +"/ws");
 
   document.getElementById("start").addEventListener("click", () => {
-    ws.send(JSON.stringify({ type: "new" }));
+    ws.send(JSON.stringify({ type: "new", width: 40, height: 40, tick: 10 }));
   })
 
   document.getElementById("stop").addEventListener("click", () => {
@@ -64,6 +80,10 @@ button {
   })
 
   ws.onmessage = (e) => {
-    console.log(e.data);
+    const payload = JSON.parse(e.data);
+    console.debug(payload)
+    if (payload.type === "state") {
+      renderState(payload.data)
+    }
   }
 </script>
