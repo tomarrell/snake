@@ -44,20 +44,33 @@ func websocketHandler(e *engine.Engine) httpHandler {
 		log.Println(connID, "new connection established")
 
 		var gameID *int
+		var gameStateChan = make(chan (engine.GameState))
+		var writeChan = make(chan (interface{}))
 		defer ifNotNil(gameID, e.DestroyGame)
+
+		go func(gsc chan (engine.GameState), wc chan (interface{})) {
+			for {
+				select {
+				case m := <-writeChan:
+					conn.WriteJSON(m)
+				case s := <-gsc:
+					conn.WriteJSON(s)
+				}
+			}
+		}(gameStateChan, writeChan)
 
 		for {
 			_, payload, err := conn.ReadMessage()
 			if err != nil {
 				log.Println(connID, err)
-				conn.WriteJSON(newAckError("unable to read message"))
+				writeChan <- newAckError("unable to read message")
 				return
 			}
 
 			val := gjson.ValidBytes(payload)
 			if !val {
 				log.Println(connID, "message is not valid json")
-				conn.WriteJSON(newAckError("message is not valid json"))
+				writeChan <- newAckError("message is not valid json")
 				return
 			}
 
@@ -66,23 +79,56 @@ func websocketHandler(e *engine.Engine) httpHandler {
 			switch mtype {
 			case "new":
 				if gameID == nil {
+					log.Println(connID, "starting a new game")
 					ng := e.NewGame(80, 80, 10)
+					_, err = e.StartGame(ng, gameStateChan)
+					if err != nil {
+						writeChan <- newAckError(err.Error())
+						break
+					}
+
 					gameID = &ng
-					conn.WriteJSON(newAckOk())
+					writeChan <- newAckOk()
 				} else {
-					conn.WriteJSON(newAckError("game already exists"))
+					writeChan <- newAckError("game already exists")
 				}
 			case "destroy":
-				ifNotNil(gameID, e.DestroyGame)
-				conn.WriteJSON(newAckOk())
+				if gameID != nil {
+					log.Println(connID, "game destroyed")
+					e.DestroyGame(*gameID)
+					writeChan <- newAckOk()
+				} else {
+					writeChan <- newAckError("no game exists, create one first with type: new")
+				}
 			case "input":
-				log.Println("got input")
+				if gameID != nil {
+					dir := gjson.GetBytes(payload, "direction").String()
+					handleInput(writeChan, e, *gameID, dir)
+				} else {
+					writeChan <- newAckError("no game exists, create one first with type: new")
+				}
 			default:
 				log.Println(connID, "received message type not valid")
-				conn.WriteJSON(newAckError("invalid message type"))
+				writeChan <- newAckError("invalid message type")
 				return
 			}
 		}
+
+	}
+}
+
+func handleInput(writeChan chan (interface{}), e *engine.Engine, id int, input string) {
+	switch input {
+	case "left":
+		e.SendInput(id, engine.KeyLeft)
+	case "right":
+		e.SendInput(id, engine.KeyRight)
+	case "up":
+		e.SendInput(id, engine.KeyUp)
+	case "down":
+		e.SendInput(id, engine.KeyDown)
+	default:
+		writeChan <- newAckError("invalid direction")
 	}
 }
 
