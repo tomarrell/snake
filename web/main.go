@@ -92,7 +92,17 @@ func websocketHandler(e *engine.Engine) httpHandler {
 			case "new":
 				if gameID == nil {
 					log.Println(connID, "starting a new game")
-					ng := e.NewGame(80, 80, 10)
+
+					w := gjson.GetBytes(payload, "width").Int()
+					h := gjson.GetBytes(payload, "height").Int()
+					t := gjson.GetBytes(payload, "tick").Int()
+
+					if w == 0 || h == 0 || t == 0 {
+						writeChan <- newAckError("one of width, height, tick cannot be undefined")
+						break
+					}
+
+					ng := e.NewGame(int(w), int(h), int(t))
 					_, err = e.StartGame(ng, gameStateChan)
 					if err != nil {
 						writeChan <- newAckError(err.Error())

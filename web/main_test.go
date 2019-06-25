@@ -48,13 +48,13 @@ func TestCreate(t *testing.T) {
 	defer ws.Close()
 
 	var ack mAck
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\" }"))
+	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
 	assert.Equal(newAckOk(), ack)
 
 	var gs engine.GameState
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\" }"))
+	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
 
 	// Read first state back from engine
 	err = ws.ReadJSON(&gs)
@@ -80,10 +80,16 @@ func TestDestroy(t *testing.T) {
 	defer ws.Close()
 
 	var ack mAck
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\" }"))
+	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
 	assert.Equal(ack, newAckOk())
+
+	var gs engine.GameState
+	// Read first state back from engine
+	err = ws.ReadJSON(&gs)
+	assert.NoError(err)
+	assert.IsType(engine.GameState{}, gs)
 
 	ws.WriteMessage(1, []byte("{ \"type\": \"destroy\" }"))
 	err = ws.ReadJSON(&ack)

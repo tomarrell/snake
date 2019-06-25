@@ -19,7 +19,7 @@ Valid types are: `new`, `destroy`, `input`, `state`.
 
 - `new`: Create a singleton game for connection and respond with an acknowledgement of a game being created.
 ```bash
-snd > { "type": "new" }
+snd > { "type": "new", "width": [int], "height": [int], "tick": [int] }
 rec > {
   "type": "ack",
   "data": "ok" | "error",
