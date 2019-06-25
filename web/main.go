@@ -48,6 +48,7 @@ func websocketHandler(e *engine.Engine) httpHandler {
 		var writeChan = make(chan (interface{}))
 		defer ifNotNil(gameID, e.DestroyGame)
 
+		// Writer routine
 		go func(gsc chan (engine.GameState), wc chan (interface{})) {
 			for {
 				select {
@@ -59,6 +60,8 @@ func websocketHandler(e *engine.Engine) httpHandler {
 			}
 		}(gameStateChan, writeChan)
 
+		// Currently in reader routine
+		// https://godoc.org/github.com/gorilla/websocket#hdr-Concurrency
 		for {
 			_, payload, err := conn.ReadMessage()
 			if err != nil {

@@ -51,12 +51,19 @@ func TestCreate(t *testing.T) {
 	ws.WriteMessage(1, []byte("{ \"type\": \"new\" }"))
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
-	assert.Equal(ack, newAckOk())
+	assert.Equal(newAckOk(), ack)
 
+	var gs engine.GameState
 	ws.WriteMessage(1, []byte("{ \"type\": \"new\" }"))
+
+	// Read first state back from engine
+	err = ws.ReadJSON(&gs)
+	assert.NoError(err)
+	assert.IsType(engine.GameState{}, gs)
+
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
-	assert.Equal(ack, newAckError("game already exists"))
+	assert.Equal(newAckError("game already exists"), ack)
 }
 
 func TestDestroy(t *testing.T) {
