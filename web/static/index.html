@@ -88,12 +88,16 @@ button {
     switch (e.keyCode) {
       case 38:
         ws.send(JSON.stringify({ type: "input", direction: "up" }));
+        break;
       case 37:
         ws.send(JSON.stringify({ type: "input", direction: "left" }));
+        break;
       case 40:
         ws.send(JSON.stringify({ type: "input", direction: "down" }));
+        break;
       case 39:
         ws.send(JSON.stringify({ type: "input", direction: "right" }));
+        break;
     }
   })
 
