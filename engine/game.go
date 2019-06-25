@@ -111,7 +111,7 @@ func (g *game) run(wg *sync.WaitGroup) {
 			g.width,
 			g.height,
 			g.snake,
-			g.fruit,
+			append([]Fruit{}, g.fruit...),
 			g.score,
 		}
 
