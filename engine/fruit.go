@@ -15,9 +15,9 @@ const (
 // Fruit is the item which adds score and
 // length when eaten by the snake
 type Fruit struct {
-	Value FruitValue
-	X     int
-	Y     int
+	Value FruitValue `json:"value"`
+	X     int        `json:"x"`
+	Y     int        `json:"y"`
 }
 
 func newFruit(boundX, boundY int) Fruit {

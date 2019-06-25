@@ -2,7 +2,7 @@ package engine
 
 // Snake is... the snake.
 type Snake struct {
-	Parts  []Part
+	Parts  []Part `json:"parts"`
 	boundX int
 	boundY int
 	velX   int
@@ -11,8 +11,8 @@ type Snake struct {
 
 // Part is a single piece of the snake
 type Part struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 func newSnake(boundX, boundY int) Snake {
