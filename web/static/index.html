@@ -4,7 +4,7 @@
 </head>
 
 <body>
-  <h2>Snake client</h2>
+  <h2>Snake</h2>
 
   <canvas id="snakeCanvas"></canvas>
 
@@ -25,6 +25,7 @@ canvas {
   display: block;
   margin: auto;
   margin-bottom: 1rem;
+  border: solid 1px #ddd;
 }
 
 button {
@@ -35,7 +36,7 @@ button {
 
 <script>
   const height = 400;
-  const width = 800;
+  const width = 400;
 
   const c = document.getElementById("snakeCanvas");
   const ctx = c.getContext("2d");
@@ -55,6 +56,10 @@ button {
   }
 
   const renderFruit = (xScale, yScale, fruits) => {
+    for (fruit of fruits) {
+      ctx.fillStyle = "green";
+      ctx.fillRect(fruit.x * xScale, fruit.y * yScale, xScale, yScale);
+    }
   }
 
   const renderState = (state) => {
@@ -79,9 +84,21 @@ button {
     ws.send(JSON.stringify({ type: "destroy" }));
   })
 
+  document.body.addEventListener("keydown", (e) => {
+    switch (e.keyCode) {
+      case 38:
+        ws.send(JSON.stringify({ type: "input", direction: "up" }));
+      case 37:
+        ws.send(JSON.stringify({ type: "input", direction: "left" }));
+      case 40:
+        ws.send(JSON.stringify({ type: "input", direction: "down" }));
+      case 39:
+        ws.send(JSON.stringify({ type: "input", direction: "right" }));
+    }
+  })
+
   ws.onmessage = (e) => {
     const payload = JSON.parse(e.data);
-    console.debug(payload)
     if (payload.type === "state") {
       renderState(payload.data)
     }
