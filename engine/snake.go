@@ -92,12 +92,12 @@ func (s *Snake) update() {
 
 	switch {
 	case newHead.X < 0:
-		newHead.X = s.boundX
-	case newHead.X > s.boundX:
+		newHead.X = s.boundX - 1
+	case newHead.X >= s.boundX:
 		newHead.X = 0
 	case newHead.Y < 0:
-		newHead.Y = s.boundY
-	case newHead.Y > s.boundY:
+		newHead.Y = s.boundY - 1
+	case newHead.Y >= s.boundY:
 		newHead.Y = 0
 	}
 

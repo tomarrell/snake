@@ -20,13 +20,15 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/index.html")
+}
+
 func main() {
 	e := engine.NewEngine()
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "static/index.html")
-	})
+	r.HandleFunc("/", serveIndex)
 	r.HandleFunc("/ws", websocketHandler(e))
 
 	log.Println("Starting server of port", port)
