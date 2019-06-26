@@ -13,14 +13,23 @@ You can build your own adapter by importing `github.com/tomarrell/snake` and the
 
 Alternatively, you can use one of the pre-built adapters. Currently the supported clients are:
 - Terminal
-- Web [In Progress]
+- Web
+
 
 In order to play around with the terminal adapter, run the following.
 ```bash
 > go get github.com/tomarrell/snake/term-snake
 > term-snake
 ```
+
 Just make sure you have your `$GOPATH` setup and `$PATH` pointing to `$GOPATH/bin`.
+
+To run a copy of of the included web adapter, run the following.
+```bash
+> go get github.com/tomarrell/snake/term-snake
+> web
+```
+This will run the web adapter on port `8080`. You can test out the basic client in your browser by navigating to `http://localhost:8080`. API and socket documentation for implementing your own client can be found in [web/README.md](./web/README.md).
 
 ## TODO
 
