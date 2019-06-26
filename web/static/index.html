@@ -4,12 +4,19 @@
 </head>
 
 <body>
-  <h2>Snake</h2>
+  <div class="wrapper">
+    <h2>Snake</h2>
 
-  <canvas id="snakeCanvas"></canvas>
+    <canvas id="snakeCanvas"></canvas>
 
-  <button id="start">Start</button>
-  <button id="stop">Stop</button>
+    <div id="scoreWrap">
+      <span>Score:&nbsp;</span>
+      <span id="score">0</span>
+    </div>
+
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+  </wrapper>
 </body>
 
 <style>
@@ -17,8 +24,17 @@ body {
   text-align: center;
 }
 
+.wrapper {
+  width: 402px;
+  margin: auto;
+}
+
 h2 {
   text-align: center;
+}
+
+#scoreWrap {
+  text-align: right;
 }
 
 canvas {
@@ -62,6 +78,10 @@ button {
     }
   }
 
+  const renderScore = (score) => {
+    document.getElementById("score").innerHTML = score;
+  }
+
   const renderState = (state) => {
     const xScale = Math.floor(width / state.width);
     const yScale = Math.floor(height / state.height);
@@ -69,6 +89,7 @@ button {
     clear()
     renderSnake(xScale, yScale, state.snake);
     renderFruit(xScale, yScale, state.fruit);
+    renderScore(state.score)
   }
 
   //-----------
@@ -103,6 +124,7 @@ button {
 
   ws.onmessage = (e) => {
     const payload = JSON.parse(e.data);
+    console.log(payload)
     if (payload.type === "state") {
       renderState(payload.data)
     }
