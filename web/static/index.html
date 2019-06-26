@@ -73,7 +73,17 @@ button {
 
   const renderFruit = (xScale, yScale, fruits) => {
     for (fruit of fruits) {
-      ctx.fillStyle = "green";
+      switch (fruit.value) {
+        case 1:
+          ctx.fillStyle = "pink";
+          break;
+        case 2:
+          ctx.fillStyle = "orange";
+          break;
+        case 5:
+          ctx.fillStyle = "green";
+          break;
+      }
       ctx.fillRect(fruit.x * xScale, fruit.y * yScale, xScale, yScale);
     }
   }
@@ -124,7 +134,6 @@ button {
 
   ws.onmessage = (e) => {
     const payload = JSON.parse(e.data);
-    console.log(payload)
     if (payload.type === "state") {
       renderState(payload.data)
     }
