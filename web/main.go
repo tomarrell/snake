@@ -35,8 +35,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(port, r))
 }
 
-// Create a new game and return the UID of the game
-// to the client.
 func websocketHandler(e *engine.Engine) httpHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -54,92 +52,101 @@ func websocketHandler(e *engine.Engine) httpHandler {
 		defer ifNotNil(gameID, e.DestroyGame)
 
 		// Writer routine
-		go func(gsc chan (engine.GameState), wc chan (interface{})) {
-			for {
-				select {
-				case m := <-writeChan:
-					conn.WriteJSON(m)
-				case s := <-gsc:
-					conn.WriteJSON(struct {
-						MType string           `json:"type"`
-						Data  engine.GameState `json:"data"`
-					}{
-						MType: "state",
-						Data:  s,
-					})
-				}
-			}
-		}(gameStateChan, writeChan)
+		go messageWriter(gameStateChan, writeChan, conn)
+		go messageReader(e, gameID, conn, connID, writeChan, gameStateChan)
+	}
+}
 
-		// Currently in reader routine
-		// https://godoc.org/github.com/gorilla/websocket#hdr-Concurrency
-		for {
-			_, payload, err := conn.ReadMessage()
-			if err != nil {
-				log.Println(connID, err)
-				writeChan <- newAckError("unable to read message")
-				return
-			}
-
-			val := gjson.ValidBytes(payload)
-			if !val {
-				log.Println(connID, "message is not valid json")
-				writeChan <- newAckError("message is not valid json")
-				return
-			}
-
-			mtype := gjson.GetBytes(payload, "type").String()
-
-			switch mtype {
-			case "new":
-				if gameID == nil {
-					log.Println(connID, "starting a new game")
-
-					w := gjson.GetBytes(payload, "width").Int()
-					h := gjson.GetBytes(payload, "height").Int()
-					t := gjson.GetBytes(payload, "tick").Int()
-
-					if w == 0 || h == 0 || t == 0 {
-						writeChan <- newAckError("one of width, height, tick cannot be undefined")
-						break
-					}
-
-					ng := e.NewGame(int(w), int(h), int(t))
-					_, err = e.StartGame(ng, gameStateChan)
-					if err != nil {
-						writeChan <- newAckError(err.Error())
-						break
-					}
-
-					gameID = &ng
-					writeChan <- newAckOk()
-				} else {
-					writeChan <- newAckError("game already exists")
-				}
-			case "destroy":
-				if gameID != nil {
-					e.EndGame(*gameID)
-					e.DestroyGame(*gameID)
-					gameID = nil
-					log.Println(connID, "game destroyed")
-					writeChan <- newAckOk()
-				} else {
-					writeChan <- newAckError("no game exists, create one first with type: new")
-				}
-			case "input":
-				if gameID != nil {
-					dir := gjson.GetBytes(payload, "direction").String()
-					handleInput(writeChan, e, *gameID, dir)
-				} else {
-					writeChan <- newAckError("no game exists, create one first with type: new")
-				}
-			default:
-				log.Println(connID, "received message type not valid")
-				writeChan <- newAckError("invalid message type")
-				return
-			}
+func messageReader(
+	e *engine.Engine,
+	gameID *int,
+	conn *websocket.Conn,
+	connID string,
+	wc chan (interface{}),
+	gsc chan (engine.GameState),
+) {
+	for {
+		_, payload, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(connID, err)
+			wc <- newAckError("unable to read message")
+			return
 		}
 
+		val := gjson.ValidBytes(payload)
+		if !val {
+			log.Println(connID, "message is not valid json")
+			wc <- newAckError("message is not valid json")
+			return
+		}
+
+		mtype := gjson.GetBytes(payload, "type").String()
+
+		switch mtype {
+		case "new":
+			if gameID == nil {
+				log.Println(connID, "starting a new game")
+
+				w := gjson.GetBytes(payload, "width").Int()
+				h := gjson.GetBytes(payload, "height").Int()
+				t := gjson.GetBytes(payload, "tick").Int()
+
+				if w == 0 || h == 0 || t == 0 {
+					wc <- newAckError("one of width, height, tick cannot be undefined")
+					break
+				}
+
+				ng := e.NewGame(int(w), int(h), int(t))
+				_, err = e.StartGame(ng, gsc)
+				if err != nil {
+					wc <- newAckError(err.Error())
+					break
+				}
+
+				gameID = &ng
+				wc <- newAckOk()
+			} else {
+				wc <- newAckError("game already exists")
+			}
+		case "destroy":
+			if gameID != nil {
+				e.EndGame(*gameID)
+				e.DestroyGame(*gameID)
+				gameID = nil
+				log.Println(connID, "game destroyed")
+				wc <- newAckOk()
+			} else {
+				wc <- newAckError("no game exists, create one first with type: new")
+			}
+		case "input":
+			if gameID != nil {
+				dir := gjson.GetBytes(payload, "direction").String()
+				handleInput(wc, e, *gameID, dir)
+			} else {
+				wc <- newAckError("no game exists, create one first with type: new")
+			}
+		default:
+			log.Println(connID, "received message type not valid")
+			wc <- newAckError("invalid message type")
+			return
+		}
+	}
+}
+
+func messageWriter(gsc chan (engine.GameState), wc chan (interface{}), conn *websocket.Conn) {
+	for {
+		select {
+		case m := <-wc:
+			conn.WriteJSON(m)
+		case s := <-gsc:
+			conn.WriteJSON(struct {
+				MType string           `json:"type"`
+				Data  engine.GameState `json:"data"`
+			}{
+				MType: "state",
+				Data:  s,
+			})
+		}
 	}
 }
 
