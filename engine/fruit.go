@@ -7,9 +7,12 @@ import "math/rand"
 type FruitValue int
 
 const (
-	FruitPink   FruitValue = 1
+	// FruitPink is the least valuable commodity
+	FruitPink FruitValue = 1
+	// FruitOrange is a moderately valued commodity
 	FruitOrange FruitValue = 2
-	FruitGreen  FruitValue = 5
+	// FruitGreen is the most valuable commodity
+	FruitGreen FruitValue = 5
 )
 
 // Fruit is the item which adds score and
