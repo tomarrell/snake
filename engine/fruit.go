@@ -34,8 +34,8 @@ func newFruit(boundX, boundY int) Fruit {
 	}
 
 	return Fruit{
-		X:     rand.Intn(boundX + 1),
-		Y:     rand.Intn(boundY + 1),
+		X:     rand.Intn(boundX),
+		Y:     rand.Intn(boundY),
 		Value: f,
 	}
 }
