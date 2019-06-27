@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
@@ -13,11 +14,12 @@ import (
 
 type httpHandler = func(w http.ResponseWriter, r *http.Request)
 
-const port = ":8080"
+const port = "8080"
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
@@ -25,14 +27,18 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	portPtr := flag.String("port", port, "port to run the web server on")
+	flag.Parse()
+
 	e := engine.NewEngine()
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", serveIndex)
 	r.HandleFunc("/ws", websocketHandler(e))
 
-	log.Println("Starting server of port", port)
-	log.Fatal(http.ListenAndServe(port, r))
+	p := ":" + *portPtr
+	log.Println("Starting server of port", p)
+	log.Fatal(http.ListenAndServe(p, r))
 }
 
 func websocketHandler(e *engine.Engine) httpHandler {

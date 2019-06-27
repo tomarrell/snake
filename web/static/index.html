@@ -105,7 +105,7 @@ button {
   //-----------
   // Websocket
   //-----------
-  const ws = new WebSocket("ws://" + window.location.host +"/ws");
+  const ws = new WebSocket("ws://" + window.location.host + "/ws");
 
   document.getElementById("start").addEventListener("click", () => {
     ws.send(JSON.stringify({ type: "new", width: 40, height: 40, tick: 10 }));
