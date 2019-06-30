@@ -23,7 +23,7 @@ type Snake struct {
 {
   width: int, // the number of grid squares the arena is wide
   height: int, // the number of grid squares the arena is high
-  snake: Snake, // the current snake state
+  snake: Snake, // the starting position of the snake
 }
 
 type Fruit struct {
@@ -34,9 +34,11 @@ type Fruit struct {
 << JSON Response Payload:
 {
   gameId: string,
+  width: int,
+  height: int,
   score: int,
-  fruit: []Fruit,
-	snake: Snake,
+  fruit: []Fruit, // two new generated piece of fruit
+	snake: Snake, // the starting position of the snake
   signature: string,
 }
 ```
@@ -48,10 +50,12 @@ The client receives the gameID, the current score, and the array of fruit. It al
 >> JSON Request Payload
 {
   gameId: string,
+  width: int,
+  height: int,
   score: int, // the previously signed score
   snake: Snake, // the previously signed position of the snake
   fruit: []Fruit, // the previously signed position of the fruit
-  signature: string, // the most recent signature, corresponding to gameID, score, snake and fruit
+  signature: string, // the most recent signature, corresponding to gameID, width, height score, snake and fruit
   ticks: [ // in the order that they occurred since the last fruit was eaten
     { velX: int, velY: int },
     { velX: int, velY: int },
@@ -61,10 +65,12 @@ The client receives the gameID, the current score, and the array of fruit. It al
 
 << JSON Response Payload
 {
-  gameID: string,
+  gameId: string,
+  width: int,
+  height: int,
   score: int,
-  snake: Snake, // the verified position of the snake
   fruit: []Fruit, // fruit contains a new piece of fruit, replacing the one that was eaten
+  snake: Snake, // the verified position of the snake
   signature: string, // a new signature for the validated state
 }
 ```
