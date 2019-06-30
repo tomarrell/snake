@@ -65,7 +65,7 @@ func (g *game) handleCollisions() {
 		if snakeHead.X == fruit.X && snakeHead.Y == fruit.Y {
 			g.score += int(fruit.Value)
 			g.snake.eatFruit(fruit.Value)
-			g.fruit[i] = newFruit(g.width, g.height)
+			g.fruit[i] = NewFruit(g.width, g.height)
 		}
 	}
 }

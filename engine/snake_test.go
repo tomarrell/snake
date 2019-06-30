@@ -77,10 +77,10 @@ func TestUpdate(t *testing.T) {
 	assert.Equal(s.head().Y, 0)
 
 	s.update()
-	assert.Equal(s.head().Y, 100)
+	assert.Equal(s.head().Y, 99)
 
 	s.update()
-	assert.Equal(s.head().Y, 99)
+	assert.Equal(s.head().Y, 98)
 
 	s.right()
 	s.update()

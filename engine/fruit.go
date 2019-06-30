@@ -23,7 +23,9 @@ type Fruit struct {
 	Y     int        `json:"y"`
 }
 
-func newFruit(boundX, boundY int) Fruit {
+// NewFruit generates a new piece of fruit between
+// the bounds given, [0, bound).
+func NewFruit(boundX, boundY int) Fruit {
 	fruitValSeed := rand.Intn(10)
 	var f FruitValue
 
