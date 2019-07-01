@@ -1,7 +1,7 @@
-# Verification Adapter
-The verification adapter provides an API to allow for the client to be run simultaneously on the client, while sending information back to the server at specific times for verification.
+# Validation Adapter
+The validation adapter provides an API to allow for the client to be run simultaneously on the client, while sending information back to the server at specific times for validation.
 
-This allows the server to remain completely stateless across each game, while also preventing the possibility of the client falsly reporting a score.
+This allows the server to remain completely stateless across each game, while also preventing the possibility of the client falsly reporting a score, or any other game parameters in order to gain an advantage.
 
 ## API
 The API is implemented as a series of REST endpoints listed below.
@@ -70,7 +70,7 @@ The client receives the gameID, the current score, and the array of fruit. It al
   height: int,
   score: int,
   fruit: []Fruit, // fruit contains a new piece of fruit, replacing the one that was eaten
-  snake: Snake, // the verified position of the snake
+  snake: Snake, // the validated position of the snake
   signature: string, // a new signature for the validated state
 }
 ```

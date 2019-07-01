@@ -20,18 +20,28 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gameID := uuid.New()
+	gameID := uuid.New().String()
 	log.Println(gameID, "creating new game")
+	s := signedStateResponse{
+		gameID,
+		ng.Width,
+		ng.Height,
+		0,
+		[]engine.Fruit{
+			engine.NewFruit(ng.Width, ng.Height),
+			engine.NewFruit(ng.Width, ng.Height),
+		},
+		ng.Snake,
+		nil,
+	}
 
-	width := ng.Width
-	height := ng.Height
-	score := 0
-	fruit := []fruit{}
+	s.Signature = signState(&s)
+	log.Printf("signed new game %v", s.Signature)
 
-	// gameID
-	// width
-	// height
-	// score
+	writeJSON(w, s)
+}
+
+func valdiatePath(w http.ResponseWriter, r *http.Request) {
 
 }
 
@@ -39,6 +49,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/new", newHandler)
+	r.HandleFunc("/validate", newHandler)
 
 	log.Println("Starting server on port:", "8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
