@@ -6,7 +6,7 @@ Simulate multiple snake games in parallel as a large set of finite state machine
 Each game has a unique board size and tick rate. Allowing it to support games across varied clients using custom built adapters for the given interface.
 
 ## Demos
-**Demo of the [web](./web) adapter: [demo](https://dev.tomarrell.com:8081)**
+**Demo of the [web](./web) adapter: [here](http://dev.tomarrell.com:8081)**
 
 *Note*: The server for the web demo hosted in `us-east` region, so if you are located too far from the region latency will start to play a role. If you don't want to spin up a machine for each region, have a look at the [validator](./validator) adapter, which is capable of verifying a client side simulation.
 
