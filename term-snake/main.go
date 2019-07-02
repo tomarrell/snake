@@ -84,19 +84,19 @@ func renderOutline(s tcell.Screen, state engine.GameState) {
 	bs := tcell.StyleDefault.Background(tcell.ColorWhite)
 
 	// Top border
-	for i := inset; i <= state.Width+offset; i++ {
+	for i := inset; i <= state.Width+offset-1; i++ {
 		s.SetCell(i, inset, bs, ' ')
 	}
 
 	// Let and right borders
-	for i := inset + borderWidth; i < state.Height+offset; i++ {
+	for i := inset + borderWidth; i < state.Height+offset-1; i++ {
 		s.SetCell(inset, i, bs, ' ')
-		s.SetCell(state.Width+offset, i, bs, ' ')
+		s.SetCell(state.Width+offset-1, i, bs, ' ')
 	}
 
 	// Bottom border
-	for i := inset; i <= state.Width+offset; i++ {
-		s.SetCell(i, state.Height+offset, bs, ' ')
+	for i := inset; i <= state.Width+offset-1; i++ {
+		s.SetCell(i, state.Height+offset-1, bs, ' ')
 	}
 }
 
