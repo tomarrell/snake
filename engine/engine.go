@@ -14,8 +14,9 @@ var (
 // Engine controls the entire set
 // of games being played within it
 type Engine struct {
-	inputChan chan (KeyCode)
-	games     []*game
+	inputChan    chan (KeyCode)
+	games        []*game
+	managedGames []*game
 }
 
 // Start blocks the current thread the Engine
@@ -52,10 +53,34 @@ func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
 		nil,
 		nil,
 		false,
+		false,
 		new(sync.RWMutex),
 	}
 
 	e.games = append(e.games, &newGame)
+	return
+}
+
+// NewManagedGame creates a new game where the ticks are
+// given manually to the engine to validate.
+func (e *Engine) NewManagedGame(width, height int) (ID int) {
+	ID = len(e.games)
+	newGame := game{
+		ID,
+		0,
+		width,
+		height,
+		newSnake(width, height),
+		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
+		0,
+		nil,
+		nil,
+		false,
+		true,
+		new(sync.RWMutex),
+	}
+
+	e.managedGames = append(e.games, &newGame)
 	return
 }
 
@@ -141,6 +166,16 @@ func (e *Engine) Purge() {
 
 func (e *Engine) getGame(ID int) (*game, bool) {
 	for _, g := range e.games {
+		if g.id == ID {
+			return g, true
+		}
+	}
+
+	return nil, false
+}
+
+func (e *Engine) getManagedGame(ID int) (*game, bool) {
+	for _, g := range e.managedGames {
 		if g.id == ID {
 			return g, true
 		}

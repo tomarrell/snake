@@ -40,6 +40,7 @@ type game struct {
 	inputChan  chan (KeyCode)
 	outputChan chan (GameState)
 	stopped    bool
+	managed    bool
 	*sync.RWMutex
 }
 
