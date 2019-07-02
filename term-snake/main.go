@@ -24,7 +24,7 @@ func main() {
 
 	e := engine.NewEngine()
 	gameID := e.NewGame(*widthPtr, *heightPtr, 10)
-	output, err := e.StartGame(gameID)
+	output, err := e.StartGame(gameID, nil)
 	if err != nil {
 		panic(e)
 	}
