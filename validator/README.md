@@ -26,18 +26,13 @@ type Snake struct {
   snake: Snake, // the starting position of the snake
 }
 
-type Fruit struct {
-  x int
-  y int
-}
-
 << JSON Response Payload:
 {
   gameId: string,
   width: int,
   height: int,
   score: int,
-  fruit: []Fruit, // two new generated piece of fruit
+  fruit: []engine.Fruit, // two new generated piece of fruit
 	snake: Snake, // the starting position of the snake
   signature: string,
 }
@@ -54,7 +49,7 @@ The client receives the gameID, the current score, and the array of fruit. It al
   height: int,
   score: int, // the previously signed score
   snake: Snake, // the previously signed position of the snake
-  fruit: []Fruit, // the previously signed position of the fruit
+  fruit: []engine.Fruit, // the previously signed position of the fruit
   signature: string, // the most recent signature, corresponding to gameID, width, height score, snake and fruit
   ticks: [ // in the order that they occurred since the last fruit was eaten
     { velX: int, velY: int },

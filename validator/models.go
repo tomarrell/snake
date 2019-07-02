@@ -35,7 +35,7 @@ type validateRequest struct {
 	Score     int            `json:"score"`
 	Snake     snake          `json:"snake"`
 	Fruit     []engine.Fruit `json:"fruit"`
-	Signature string         `json:"signature"`
+	Signature *string        `json:"signature"`
 	Ticks     []tick         `json:"ticks"`
 }
 

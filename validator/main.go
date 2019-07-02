@@ -35,21 +35,45 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		nil,
 	}
 
-	s.Signature = signState(&s)
-	log.Printf("signed new game %v", s.Signature)
-
+	s.Signature = signState(&vPayload{s.GameID, s.Width, s.Height, s.Score, s.Fruit, s.Snake})
 	writeJSON(w, s)
 }
 
-func valdiatePath(w http.ResponseWriter, r *http.Request) {
+func validatePath(w http.ResponseWriter, r *http.Request) {
+	e := engine.NewEngine()
+	var vr validateRequest
 
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&vr)
+	if err != nil {
+		http.Error(w, "invalid json body", http.StatusBadRequest)
+	}
+
+	toSign := vPayload{
+		vr.GameID,
+		vr.Width,
+		vr.Height,
+		vr.Score,
+		vr.Fruit,
+		vr.Snake,
+	}
+
+	if *signState(&toSign) != *vr.Signature {
+		log.Println(vr.GameID, "invalid signature")
+		http.Error(w, "invalid payload signature", http.StatusUnauthorized)
+		return
+	}
+
+	g := e.NewGame(vr.Width, vr.Height, 0)
+	// setup game
+	// play each tick against the snake position
 }
 
 func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/new", newHandler)
-	r.HandleFunc("/validate", newHandler)
+	r.HandleFunc("/validate", validatePath)
 
 	log.Println("Starting server on port:", "8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
