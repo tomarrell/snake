@@ -26,7 +26,6 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			nil,
 			nil,
 			false,
-			false,
 			new(sync.RWMutex),
 		})
 
@@ -45,7 +44,6 @@ func TestNewGame_MultipleGames(t *testing.T) {
 			nil,
 			nil,
 			false,
-			false,
 			new(sync.RWMutex),
 		})
 
@@ -60,19 +58,13 @@ func TestNewManagedGame(t *testing.T) {
 	val1, _ := e.getManagedGame(game1)
 	assert.Equal(
 		val1,
-		&game{
-			0,
+		&managedGame{
 			0,
 			1,
 			1,
 			newSnake(1, 1),
 			val1.fruit,
 			0,
-			nil,
-			nil,
-			false,
-			true,
-			new(sync.RWMutex),
 		})
 
 	assert.Len(e.managedGames, 1)

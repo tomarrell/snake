@@ -64,7 +64,8 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	g := e.NewGame(vr.Width, vr.Height, 0)
+	g := e.NewManagedGame(vr.Width, vr.Height)
+
 	// setup game
 	// play each tick against the snake position
 }

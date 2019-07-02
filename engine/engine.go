@@ -16,7 +16,7 @@ var (
 type Engine struct {
 	inputChan    chan (KeyCode)
 	games        []*game
-	managedGames []*game
+	managedGames []*managedGame
 }
 
 // Start blocks the current thread the Engine
@@ -53,7 +53,6 @@ func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
 		nil,
 		nil,
 		false,
-		false,
 		new(sync.RWMutex),
 	}
 
@@ -65,23 +64,23 @@ func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
 // given manually to the engine to validate.
 func (e *Engine) NewManagedGame(width, height int) (ID int) {
 	ID = len(e.games)
-	newGame := game{
+	newGame := managedGame{
 		ID,
-		0,
 		width,
 		height,
-		newSnake(width, height),
-		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
-		0,
-		nil,
-		nil,
-		false,
-		true,
-		new(sync.RWMutex),
+		newSnake(width, height), // TODO take as input
+		[]Fruit{NewFruit(width, height), NewFruit(width, height)}, // TODO take as input
+		0, // TODO take as input
 	}
 
-	e.managedGames = append(e.games, &newGame)
+	e.managedGames = append(e.managedGames, &newGame)
 	return
+}
+
+// RunManagedGame runs a managed game to completion given
+// a slice of ticks to be executed.
+func (e *Engine) RunManagedGame(ID int, ticks []Tick) bool {
+	return false
 }
 
 // StartGame takes a game ID, starts the game and returns
@@ -174,7 +173,7 @@ func (e *Engine) getGame(ID int) (*game, bool) {
 	return nil, false
 }
 
-func (e *Engine) getManagedGame(ID int) (*game, bool) {
+func (e *Engine) getManagedGame(ID int) (*managedGame, bool) {
 	for _, g := range e.managedGames {
 		if g.id == ID {
 			return g, true
