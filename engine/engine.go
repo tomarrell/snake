@@ -112,7 +112,7 @@ func (e *Engine) SendInput(ID int, key KeyCode) error {
 	}
 
 	g.RLock()
-	velX := g.snake.velX
+	velX := g.snake.VelX
 	g.RUnlock()
 
 	if velX != 0 {

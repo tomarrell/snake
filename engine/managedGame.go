@@ -36,8 +36,8 @@ func (mg *ManagedGame) run(ticks []Tick) bool {
 			return false
 		}
 
-		mg.Snake.velX = t.VelX
-		mg.Snake.velY = t.VelY
+		mg.Snake.VelX = t.VelX
+		mg.Snake.VelY = t.VelY
 
 		mg.Snake.update()
 	}

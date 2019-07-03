@@ -21,6 +21,11 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if ng.Snake.BoundX != ng.Width || ng.Snake.BoundY != ng.Height {
+		http.Error(w, "snake bounds don't match arena bounds", http.StatusBadRequest)
+		return
+	}
+
 	gameID := uuid.New().String()
 	log.Println(gameID, "creating new game")
 	s := signedStateResponse{

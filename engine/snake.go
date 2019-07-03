@@ -3,10 +3,10 @@ package engine
 // Snake is... the snake.
 type Snake struct {
 	Parts  []Part `json:"parts"`
-	boundX int
-	boundY int
-	velX   int
-	velY   int
+	BoundX int    `json:"boundX"`
+	BoundY int    `json:"boundY"`
+	VelX   int    `json:"velX"`
+	VelY   int    `json:"velY"`
 }
 
 // Part is a single piece of the snake
@@ -49,55 +49,55 @@ func (s *Snake) eatFruit(size FruitValue) int {
 }
 
 func (s *Snake) up() {
-	if s.velY != 0 {
+	if s.VelY != 0 {
 		return
 	}
 
-	s.velX = 0
-	s.velY = -1
+	s.VelX = 0
+	s.VelY = -1
 }
 
 func (s *Snake) down() {
-	if s.velY != 0 {
+	if s.VelY != 0 {
 		return
 	}
 
-	s.velX = 0
-	s.velY = 1
+	s.VelX = 0
+	s.VelY = 1
 }
 
 func (s *Snake) left() {
-	if s.velX != 0 {
+	if s.VelX != 0 {
 		return
 	}
 
-	s.velX = -1
-	s.velY = 0
+	s.VelX = -1
+	s.VelY = 0
 }
 
 func (s *Snake) right() {
-	if s.velX != 0 {
+	if s.VelX != 0 {
 		return
 	}
 
-	s.velX = 1
-	s.velY = 0
+	s.VelX = 1
+	s.VelY = 0
 }
 
 func (s *Snake) update() {
 	newHead := s.Parts[0]
 
-	newHead.X += s.velX
-	newHead.Y += s.velY
+	newHead.X += s.VelX
+	newHead.Y += s.VelY
 
 	switch {
 	case newHead.X < 0:
-		newHead.X = s.boundX - 1
-	case newHead.X >= s.boundX:
+		newHead.X = s.BoundX - 1
+	case newHead.X >= s.BoundX:
 		newHead.X = 0
 	case newHead.Y < 0:
-		newHead.Y = s.boundY - 1
-	case newHead.Y >= s.boundY:
+		newHead.Y = s.BoundY - 1
+	case newHead.Y >= s.BoundY:
 		newHead.Y = 0
 	}
 

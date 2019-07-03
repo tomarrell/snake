@@ -30,8 +30,8 @@ func TestMoveUp(t *testing.T) {
 
 	s.up()
 	assert.Equal(s.length(), 3)
-	assert.Equal(s.velY, -1)
-	assert.Equal(s.velX, 0)
+	assert.Equal(s.VelY, -1)
+	assert.Equal(s.VelX, 0)
 }
 
 func TestMoveDown(t *testing.T) {
@@ -40,8 +40,8 @@ func TestMoveDown(t *testing.T) {
 
 	s.down()
 	assert.Equal(s.length(), 3)
-	assert.Equal(s.velY, 1)
-	assert.Equal(s.velX, 0)
+	assert.Equal(s.VelY, 1)
+	assert.Equal(s.VelX, 0)
 }
 
 func TestMoveRight(t *testing.T) {
@@ -51,8 +51,8 @@ func TestMoveRight(t *testing.T) {
 	s.down()
 	s.right()
 	assert.Equal(s.length(), 3)
-	assert.Equal(s.velY, 0)
-	assert.Equal(s.velX, 1)
+	assert.Equal(s.VelY, 0)
+	assert.Equal(s.VelX, 1)
 }
 
 func TestMoveLeft(t *testing.T) {
@@ -62,8 +62,8 @@ func TestMoveLeft(t *testing.T) {
 	s.down()
 	s.left()
 	assert.Equal(s.length(), 3)
-	assert.Equal(s.velY, 0)
-	assert.Equal(s.velX, -1)
+	assert.Equal(s.VelY, 0)
+	assert.Equal(s.VelX, -1)
 }
 
 func TestUpdate(t *testing.T) {
@@ -72,7 +72,7 @@ func TestUpdate(t *testing.T) {
 
 	s.up()
 	s.update()
-	assert.Equal(s.velY, -1)
+	assert.Equal(s.VelY, -1)
 	assert.Equal(s.head().X, 3)
 	assert.Equal(s.head().Y, 0)
 
