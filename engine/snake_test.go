@@ -16,11 +16,11 @@ func TestEatFruit(t *testing.T) {
 
 	assert.Equal(s.length(), 5)
 	assert.Equal(s.Parts, []Part{
-		Part{3, 1},
-		Part{2, 1},
-		Part{1, 1},
-		Part{1, 1},
-		Part{1, 1},
+		{3, 1},
+		{2, 1},
+		{1, 1},
+		{1, 1},
+		{1, 1},
 	})
 }
 

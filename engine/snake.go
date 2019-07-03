@@ -19,9 +19,9 @@ func newSnake(boundX, boundY int) Snake {
 	// Start a new snake with 3 parts facing East
 	return Snake{
 		[]Part{
-			Part{3, 1},
-			Part{2, 1},
-			Part{1, 1},
+			{3, 1},
+			{2, 1},
+			{1, 1},
 		},
 		boundX,
 		boundY,

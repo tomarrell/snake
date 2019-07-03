@@ -15,16 +15,16 @@ func TestManagedGameRun(t *testing.T) {
 		20,
 		0,
 		newSnake(20, 20),
-		[]Fruit{Fruit{1, 5, 5}, Fruit{2, 10, 10}},
+		[]Fruit{{1, 5, 5}, {2, 10, 10}},
 	)
 
 	ticks := []Tick{
-		Tick{1, 0},
-		Tick{1, 0},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{0, 1},
+		{1, 0},
+		{1, 0},
+		{0, 1},
+		{0, 1},
+		{0, 1},
+		{0, 1},
 	}
 
 	valid := mg.run(ticks)
@@ -41,26 +41,26 @@ func TestManagedGameRun_2(t *testing.T) {
 		20,
 		0,
 		newSnake(20, 20),
-		[]Fruit{Fruit{1, 5, 5}, Fruit{2, 10, 10}},
+		[]Fruit{{1, 5, 5}, {2, 10, 10}},
 	)
 
 	ticks := []Tick{
-		Tick{1, 0},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{1, 0},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{1, 0},
-		Tick{1, 0},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{1, 0},
-		Tick{0, 1},
-		Tick{0, 1},
-		Tick{1, 0},
-		Tick{1, 0},
+		{1, 0},
+		{0, 1},
+		{0, 1},
+		{1, 0},
+		{0, 1},
+		{0, 1},
+		{1, 0},
+		{1, 0},
+		{0, 1},
+		{0, 1},
+		{0, 1},
+		{1, 0},
+		{0, 1},
+		{0, 1},
+		{1, 0},
+		{1, 0},
 	}
 
 	valid := mg.run(ticks)
