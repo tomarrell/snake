@@ -16,7 +16,7 @@ var (
 type Engine struct {
 	inputChan    chan (KeyCode)
 	games        []*game
-	managedGames []*managedGame
+	managedGames []*ManagedGame
 }
 
 // Start blocks the current thread the Engine
@@ -67,8 +67,17 @@ func (e *Engine) NewManagedGame(width, height, score int, snake Snake, fruit []F
 
 // RunManagedGame runs a managed game to completion given
 // a slice of ticks to be executed.
-func (e *Engine) RunManagedGame(ID int, ticks []Tick) bool {
-	return false
+func (e *Engine) RunManagedGame(ID int, ticks []Tick) (*ManagedGame, error) {
+	mg, ok := e.getManagedGame(ID)
+	if !ok {
+		return nil, errors.New("no managed game with given ID")
+	}
+
+	if !mg.run(ticks) {
+		return nil, errors.New("invalid tick path")
+	}
+
+	return mg, nil
 }
 
 // StartGame takes a game ID, starts the game and returns
@@ -161,7 +170,7 @@ func (e *Engine) getGame(ID int) (*game, bool) {
 	return nil, false
 }
 
-func (e *Engine) getManagedGame(ID int) (*managedGame, bool) {
+func (e *Engine) getManagedGame(ID int) (*ManagedGame, bool) {
 	for _, g := range e.managedGames {
 		if g.id == ID {
 			return g, true

@@ -32,6 +32,42 @@ func TestManagedGameRun(t *testing.T) {
 	assert.True(valid)
 }
 
+func TestManagedGameRun_2(t *testing.T) {
+	assert := assert.New(t)
+
+	mg := newManagedGame(
+		1,
+		20,
+		20,
+		0,
+		newSnake(20, 20),
+		[]Fruit{Fruit{1, 5, 5}, Fruit{2, 10, 10}},
+	)
+
+	ticks := []Tick{
+		Tick{1, 0},
+		Tick{0, 1},
+		Tick{0, 1},
+		Tick{1, 0},
+		Tick{0, 1},
+		Tick{0, 1},
+		Tick{1, 0},
+		Tick{1, 0},
+		Tick{0, 1},
+		Tick{0, 1},
+		Tick{0, 1},
+		Tick{1, 0},
+		Tick{0, 1},
+		Tick{0, 1},
+		Tick{1, 0},
+		Tick{1, 0},
+	}
+
+	valid := mg.run(ticks)
+
+	assert.True(valid)
+}
+
 var tickTests = []struct {
 	name string
 	velX int
