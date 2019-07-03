@@ -58,12 +58,12 @@ func TestNewManagedGame(t *testing.T) {
 	val1, _ := e.getManagedGame(game1)
 	assert.Equal(
 		val1,
-		&managedGame{
+		&ManagedGame{
 			0,
 			20,
 			20,
 			newSnake(1, 1),
-			val1.fruit,
+			val1.Fruit,
 			0,
 		})
 

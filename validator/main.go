@@ -49,6 +49,12 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&vr)
 	if err != nil {
 		http.Error(w, "invalid json body", http.StatusBadRequest)
+		return
+	}
+
+	if vr.Signature == nil {
+		http.Error(w, "empty signature", http.StatusBadRequest)
+		return
 	}
 
 	checkSign := vPayload{vr.GameID, vr.Width, vr.Height, vr.Score, vr.Fruit, vr.Snake}
@@ -62,6 +68,7 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 	g, err := e.RunManagedGame(mg, vr.Ticks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	s := signedStateResponse{
@@ -81,8 +88,8 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/new", newHandler)
-	r.HandleFunc("/validate", validatePath)
+	r.HandleFunc("/new", newHandler).Methods("POST")
+	r.HandleFunc("/validate", validatePath).Methods("POST")
 
 	log.Println("Starting server on port:", "8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
