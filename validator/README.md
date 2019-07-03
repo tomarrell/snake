@@ -8,22 +8,11 @@ The API is implemented as a series of REST endpoints listed below.
 
 - `/new`: generates a new game with randomized fruit location.
 ```golang
-type Part struct {
-  x int
-  y int
-}
-
-type Snake struct {
-  velX int
-  velY int
-  parts []Part
-}
-
 >> JSON Request Payload:
 {
   width: int, // the number of grid squares the arena is wide
   height: int, // the number of grid squares the arena is high
-  snake: Snake, // the starting position of the snake
+  snake: engine.Snake, // the starting position of the snake
 }
 
 << JSON Response Payload:
@@ -33,7 +22,7 @@ type Snake struct {
   height: int,
   score: int,
   fruit: []engine.Fruit, // two new generated piece of fruit
-	snake: Snake, // the starting position of the snake
+	snake: engine.Snake, // the starting position of the snake
   signature: string,
 }
 ```
@@ -48,7 +37,7 @@ The client receives the gameID, the current score, and the array of fruit. It al
   width: int,
   height: int,
   score: int, // the previously signed score
-  snake: Snake, // the previously signed position of the snake
+  snake: engine.Snake, // the previously signed position of the snake
   fruit: []engine.Fruit, // the previously signed position of the fruit
   signature: string, // the most recent signature, corresponding to gameID, width, height score, snake and fruit
   ticks: [ // in the order that they occurred since the last fruit was eaten
@@ -64,8 +53,8 @@ The client receives the gameID, the current score, and the array of fruit. It al
   width: int,
   height: int,
   score: int,
-  fruit: []Fruit, // fruit contains a new piece of fruit, replacing the one that was eaten
-  snake: Snake, // the validated position of the snake
+  fruit: []engine.Fruit, // fruit contains a new piece of fruit, replacing the one that was eaten
+  snake: engine..Snake, // the validated position of the snake
   signature: string, // a new signature for the validated state
 }
 ```
