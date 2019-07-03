@@ -10,7 +10,7 @@ Simulate multiple snake games in parallel as a large set of finite state machine
 
 *Note*: The server for the web demo hosted in `us-east` region, so if you are located too far from the region latency will start to play a role. If you don't want to spin up a machine for each region, have a look at the [validator](./validator) adapter, which is capable of verifying a client side simulation.
 
-**Demo of the [term-snake](./term-snake) adpater:**
+**Demo of the [term-snake](./term-snake) adapter:**
 ![Term-snake](./images/term_snake_demo.gif)
 
 ## Overview
