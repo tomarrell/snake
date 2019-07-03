@@ -4,11 +4,11 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"log"
+	"os"
 
 	"github.com/tomarrell/snake/engine"
 )
-
-const secret = "secret_key_read_from_env"
 
 type vPayload struct {
 	GameID string
@@ -20,6 +20,11 @@ type vPayload struct {
 }
 
 func signState(state *vPayload) *string {
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		log.Println("WARNING: no env variable 'SECRET' provided, signatures will be insecure")
+	}
+
 	h := sha256.New()
 
 	s, err := json.Marshal(state)
