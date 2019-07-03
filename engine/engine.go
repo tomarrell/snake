@@ -40,40 +40,28 @@ func NewEngine() *Engine {
 }
 
 // NewGame creates a new game of snake to be run by the engine
-func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
-	ID = len(e.games)
-	newGame := game{
-		ID,
-		tickrate,
-		width,
-		height,
-		newSnake(width, height),
-		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
-		0,
-		nil,
-		nil,
-		false,
-		new(sync.RWMutex),
-	}
+func (e *Engine) NewGame(width, height, tickrate int) (id int) {
+	id = len(e.games)
+	newGame := newGame(id, tickrate, width, height)
 
-	e.games = append(e.games, &newGame)
+	e.games = append(e.games, newGame)
 	return
 }
 
 // NewManagedGame creates a new game where the ticks are
 // given manually to the engine to validate.
-func (e *Engine) NewManagedGame(width, height int) (ID int) {
+func (e *Engine) NewManagedGame(width, height, score int, snake Snake, fruit []Fruit) (ID int) {
 	ID = len(e.games)
-	newGame := managedGame{
+	newGame := newManagedGame(
 		ID,
 		width,
 		height,
-		newSnake(width, height), // TODO take as input
-		[]Fruit{NewFruit(width, height), NewFruit(width, height)}, // TODO take as input
-		0, // TODO take as input
-	}
+		score,
+		snake,
+		fruit,
+	)
 
-	e.managedGames = append(e.managedGames, &newGame)
+	e.managedGames = append(e.managedGames, newGame)
 	return
 }
 

@@ -43,6 +43,22 @@ type game struct {
 	*sync.RWMutex
 }
 
+func newGame(id, tickrate, width, height int) *game {
+	return &game{
+		id,
+		tickrate,
+		width,
+		height,
+		newSnake(width, height),
+		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
+		0,
+		nil,
+		nil,
+		false,
+		new(sync.RWMutex),
+	}
+}
+
 func (g *game) stop() {
 	g.Lock()
 	defer g.Unlock()
