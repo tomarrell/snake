@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"log"
 	"net/http"
 
@@ -9,6 +10,22 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/tomarrell/snake/engine"
 )
+
+const port = "8080"
+
+func main() {
+	portPtr := flag.String("port", port, "port to run the web server on")
+	flag.Parse()
+
+	r := mux.NewRouter()
+
+	r.HandleFunc("/new", newHandler).Methods("POST")
+	r.HandleFunc("/validate", validatePath).Methods("POST")
+
+	p := ":" + *portPtr
+	log.Println("Starting server of port", p)
+	log.Fatal(http.ListenAndServe(p, r))
+}
 
 // Handle creating a new managed snake game
 func newHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,14 +107,4 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 
 	s.Signature = signState(&vPayload{s.GameID, s.Width, s.Height, s.Score, s.Fruit, s.Snake})
 	writeJSON(w, s)
-}
-
-func main() {
-	r := mux.NewRouter()
-
-	r.HandleFunc("/new", newHandler).Methods("POST")
-	r.HandleFunc("/validate", validatePath).Methods("POST")
-
-	log.Println("Starting server on port:", "8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
 }
