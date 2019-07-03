@@ -1,4 +1,6 @@
 # Snake
+![](https://goreportcard.com/badge/github.com/tomarrell/snake)
+
 A parallel, abstract, ~~completely overengineered~~ snake game engine, with pre-built adapters for supporting different clients.
 
 Simulate multiple snake games in parallel as a large set of finite state machines. Abstracted over directional input returning state changes. Each game has a unique board size and tick rate. Allowing it to support games across varied clients using custom adapters.
