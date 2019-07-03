@@ -70,6 +70,8 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mg := e.NewManagedGame(vr.Width, vr.Height, vr.Score, vr.Snake, vr.Fruit)
+	defer e.DestroyManagedGame(mg)
+
 	g, err := e.RunManagedGame(mg, vr.Ticks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

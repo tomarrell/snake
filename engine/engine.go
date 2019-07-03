@@ -51,7 +51,7 @@ func (e *Engine) NewGame(width, height, tickrate int) (id int) {
 // NewManagedGame creates a new game where the ticks are
 // given manually to the engine to validate.
 func (e *Engine) NewManagedGame(width, height, score int, snake Snake, fruit []Fruit) (ID int) {
-	ID = len(e.games)
+	ID = len(e.managedGames)
 	newGame := newManagedGame(
 		ID,
 		width,
@@ -150,6 +150,17 @@ func (e *Engine) DestroyGame(ID int) {
 			// last and reducing length of array
 			e.games[i] = e.games[len(e.games)-1]
 			e.games = e.games[:len(e.games)-1]
+		}
+	}
+}
+
+// DestroyManagedGame removes the
+// game from the engine. Irrecoverable.
+func (e *Engine) DestroyManagedGame(ID int) {
+	for i, g := range e.managedGames {
+		if g.id == ID {
+			e.managedGames[i] = e.managedGames[len(e.managedGames)-1]
+			e.managedGames = e.managedGames[:len(e.managedGames)-1]
 		}
 	}
 }
