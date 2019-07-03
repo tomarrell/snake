@@ -19,8 +19,8 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/new", newHandler).Methods("POST")
-	r.HandleFunc("/validate", validatePath).Methods("POST")
+	r.HandleFunc("/new", newHandler).Methods(http.MethodPost)
+	r.HandleFunc("/validate", validatePath).Methods(http.MethodPost)
 
 	p := ":" + *portPtr
 	log.Println("Starting server of port", p)

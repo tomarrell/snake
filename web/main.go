@@ -33,7 +33,7 @@ func main() {
 	e := engine.NewEngine()
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", serveIndex)
+	r.HandleFunc("/", serveIndex).Methods(http.MethodGet)
 	r.HandleFunc("/ws", websocketHandler(e))
 
 	p := ":" + *portPtr
