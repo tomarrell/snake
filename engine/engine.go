@@ -16,7 +16,7 @@ var (
 type Engine struct {
 	inputChan    chan (KeyCode)
 	games        []*game
-	managedGames []*game
+	managedGames []*ManagedGame
 }
 
 // Start blocks the current thread the Engine
@@ -40,48 +40,44 @@ func NewEngine() *Engine {
 }
 
 // NewGame creates a new game of snake to be run by the engine
-func (e *Engine) NewGame(width, height, tickrate int) (ID int) {
-	ID = len(e.games)
-	newGame := game{
-		ID,
-		tickrate,
-		width,
-		height,
-		newSnake(width, height),
-		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
-		0,
-		nil,
-		nil,
-		false,
-		false,
-		new(sync.RWMutex),
-	}
+func (e *Engine) NewGame(width, height, tickrate int) (id int) {
+	id = len(e.games)
+	newGame := newGame(id, tickrate, width, height)
 
-	e.games = append(e.games, &newGame)
+	e.games = append(e.games, newGame)
 	return
 }
 
 // NewManagedGame creates a new game where the ticks are
 // given manually to the engine to validate.
-func (e *Engine) NewManagedGame(width, height int) (ID int) {
-	ID = len(e.games)
-	newGame := game{
+func (e *Engine) NewManagedGame(width, height, score int, snake Snake, fruit []Fruit) (ID int) {
+	ID = len(e.managedGames)
+	newGame := newManagedGame(
 		ID,
-		0,
 		width,
 		height,
-		newSnake(width, height),
-		[]Fruit{NewFruit(width, height), NewFruit(width, height)},
-		0,
-		nil,
-		nil,
-		false,
-		true,
-		new(sync.RWMutex),
+		score,
+		snake,
+		fruit,
+	)
+
+	e.managedGames = append(e.managedGames, newGame)
+	return
+}
+
+// RunManagedGame runs a managed game to completion given
+// a slice of ticks to be executed.
+func (e *Engine) RunManagedGame(ID int, ticks []Tick) (*ManagedGame, error) {
+	mg, ok := e.getManagedGame(ID)
+	if !ok {
+		return nil, errors.New("no managed game with given ID")
 	}
 
-	e.managedGames = append(e.games, &newGame)
-	return
+	if !mg.run(ticks) {
+		return nil, errors.New("invalid tick path")
+	}
+
+	return mg, nil
 }
 
 // StartGame takes a game ID, starts the game and returns
@@ -116,7 +112,7 @@ func (e *Engine) SendInput(ID int, key KeyCode) error {
 	}
 
 	g.RLock()
-	velX := g.snake.velX
+	velX := g.snake.VelX
 	g.RUnlock()
 
 	if velX != 0 {
@@ -158,6 +154,17 @@ func (e *Engine) DestroyGame(ID int) {
 	}
 }
 
+// DestroyManagedGame removes the
+// game from the engine. Irrecoverable.
+func (e *Engine) DestroyManagedGame(ID int) {
+	for i, g := range e.managedGames {
+		if g.id == ID {
+			e.managedGames[i] = e.managedGames[len(e.managedGames)-1]
+			e.managedGames = e.managedGames[:len(e.managedGames)-1]
+		}
+	}
+}
+
 // Purge destroys all the currently running games.
 // This is a completely lossy action.
 func (e *Engine) Purge() {
@@ -174,7 +181,7 @@ func (e *Engine) getGame(ID int) (*game, bool) {
 	return nil, false
 }
 
-func (e *Engine) getManagedGame(ID int) (*game, bool) {
+func (e *Engine) getManagedGame(ID int) (*ManagedGame, bool) {
 	for _, g := range e.managedGames {
 		if g.id == ID {
 			return g, true

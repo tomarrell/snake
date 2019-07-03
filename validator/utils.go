@@ -10,5 +10,6 @@ func writeJSON(w http.ResponseWriter, payload interface{}) {
 	if err != nil {
 		http.Error(w, "failed to marshal response payload", http.StatusInternalServerError)
 	}
+
 	w.Write(j)
 }
