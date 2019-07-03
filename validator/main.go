@@ -10,6 +10,7 @@ import (
 	"github.com/tomarrell/snake/engine"
 )
 
+// Handle creating a new managed snake game
 func newHandler(w http.ResponseWriter, r *http.Request) {
 	var ng newGameRequest
 
@@ -39,6 +40,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, s)
 }
 
+// Validate a tick path reaching a piece of fruit
 func validatePath(w http.ResponseWriter, r *http.Request) {
 	e := engine.NewEngine()
 	var vr validateRequest
@@ -49,25 +51,31 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json body", http.StatusBadRequest)
 	}
 
-	toSign := vPayload{
-		vr.GameID,
-		vr.Width,
-		vr.Height,
-		vr.Score,
-		vr.Fruit,
-		vr.Snake,
-	}
-
-	if *signState(&toSign) != *vr.Signature {
+	checkSign := vPayload{vr.GameID, vr.Width, vr.Height, vr.Score, vr.Fruit, vr.Snake}
+	if *signState(&checkSign) != *vr.Signature {
 		log.Println(vr.GameID, "invalid signature")
 		http.Error(w, "invalid payload signature", http.StatusUnauthorized)
 		return
 	}
 
-	g := e.NewManagedGame(vr.Width, vr.Height)
+	mg := e.NewManagedGame(vr.Width, vr.Height, vr.Score, vr.Snake, vr.Fruit)
+	g, err := e.RunManagedGame(mg, vr.Ticks)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 
-	// setup game
-	// play each tick against the snake position
+	s := signedStateResponse{
+		vr.GameID,
+		g.Width,
+		g.Height,
+		g.Score,
+		g.Fruit,
+		g.Snake,
+		nil,
+	}
+
+	s.Signature = signState(&vPayload{s.GameID, s.Width, s.Height, s.Score, s.Fruit, s.Snake})
+	writeJSON(w, s)
 }
 
 func main() {

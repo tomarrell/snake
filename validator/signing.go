@@ -16,7 +16,7 @@ type vPayload struct {
 	Height int
 	Score  int
 	Fruit  []engine.Fruit
-	Snake  snake
+	Snake  engine.Snake
 }
 
 func signState(state *vPayload) *string {
