@@ -47,6 +47,7 @@ func (mg *ManagedGame) run(ticks []Tick) bool {
 		return false
 	}
 
+	mg.Snake.eatFruit(mg.Fruit[i].Value)
 	mg.Score += int(mg.Fruit[i].Value)
 	mg.Fruit[i] = NewFruit(mg.Width, mg.Height)
 
