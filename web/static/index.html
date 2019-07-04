@@ -97,9 +97,13 @@ button {
     const yScale = Math.floor(height / state.height);
 
     clear()
-    renderSnake(xScale, yScale, state.snake);
     renderFruit(xScale, yScale, state.fruit);
+    renderSnake(xScale, yScale, state.snake);
     renderScore(state.score)
+
+    if (state.finished) {
+      alert("Game over! Press STOP then START to play again.")
+    }
   }
 
   //-----------
