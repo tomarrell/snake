@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
+	"log"
 	"time"
 
 	"github.com/gdamore/tcell"
@@ -23,37 +23,50 @@ func main() {
 	flag.Parse()
 
 	e := engine.NewEngine()
-	gameID := e.NewGame(*widthPtr, *heightPtr, 10)
+
+	var gameID int
+	var output chan engine.GameState
+	gameID = e.NewGame(*widthPtr, *heightPtr, 10)
 	output, err := e.StartGame(gameID, nil)
 	if err != nil {
-		panic(e)
+		log.Fatal(err.Error())
 	}
 
 	s, err := tcell.NewScreen()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", e)
-		os.Exit(1)
+		log.Fatalf(err.Error())
 	}
 
 	if err = s.Init(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", e)
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 
 	quit := make(chan struct{})
-	initKeyHandlers(s, e, gameID, quit)
-
+	restart := make(chan struct{})
+	initKeyHandlers(s, e, gameID, quit, restart)
 	dur := time.Duration(0)
 
 loop:
 	for {
 		select {
 		case state := <-output:
-			renderState(s, state)
+			if state.Finished {
+				renderGameOver(s, state)
+			} else {
+				renderState(s, state)
+			}
 		case <-quit:
 			break loop
+		case <-restart:
+			e.DestroyGame(gameID)
+			gameID = e.NewGame(*widthPtr, *heightPtr, 10)
+			output, err = e.StartGame(gameID, nil)
+			if err != nil {
+				panic(e)
+			}
 		case <-time.After(time.Millisecond * 50):
 		}
+
 		start := time.Now()
 		dur += time.Now().Sub(start)
 	}
@@ -67,7 +80,20 @@ func renderState(s tcell.Screen, state engine.GameState) {
 	renderOutline(s, state)
 	renderSnake(s, state.Snake)
 	renderFruit(s, state.Fruit)
+	renderText(s, 2, state.Height+offset+1, "Press SPACE to restart.")
 	renderText(s, 2, state.Height+offset+2, fmt.Sprint("Score: ", state.Score))
+
+	s.Show()
+}
+
+func renderGameOver(s tcell.Screen, state engine.GameState) {
+	s.Clear()
+
+	renderOutline(s, state)
+	renderSnake(s, state.Snake)
+	renderFruit(s, state.Fruit)
+	renderText(s, 2, state.Height+offset+2, fmt.Sprint("Score: ", state.Score))
+	renderText(s, 2, state.Height+offset+1, "Game Over. Press SPACE to restart.")
 
 	s.Show()
 }
@@ -135,7 +161,7 @@ func renderFruit(s tcell.Screen, fruit []engine.Fruit) {
 	}
 }
 
-func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan (struct{})) {
+func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan struct{}, rst chan struct{}) {
 	go func() {
 		for {
 			ev := s.PollEvent()
@@ -144,6 +170,10 @@ func initKeyHandlers(s tcell.Screen, e *engine.Engine, gameID int, c chan (struc
 				if ev.Rune() == 'q' {
 					close(c)
 					return
+				}
+				if ev.Rune() == ' ' {
+					rst <- struct{}{}
+					continue
 				}
 
 				// Special keys

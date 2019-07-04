@@ -22,11 +22,12 @@ const (
 // GameState represents all the information
 // returned to the client for rendering
 type GameState struct {
-	Width  int     `json:"width"`
-	Height int     `json:"height"`
-	Snake  Snake   `json:"snake"`
-	Fruit  []Fruit `json:"fruit"`
-	Score  int     `json:"score"`
+	Width    int     `json:"width"`
+	Height   int     `json:"height"`
+	Snake    Snake   `json:"snake"`
+	Fruit    []Fruit `json:"fruit"`
+	Score    int     `json:"score"`
+	Finished bool    `json:"finished"`
 }
 
 type game struct {
@@ -39,7 +40,7 @@ type game struct {
 	score      int
 	inputChan  chan (KeyCode)
 	outputChan chan (GameState)
-	stopped    bool
+	finished   bool
 	*sync.RWMutex
 }
 
@@ -61,27 +62,44 @@ func newGame(id, tickrate, width, height int) *game {
 
 func (g *game) stop() {
 	g.Lock()
-	defer g.Unlock()
-	g.stopped = true
+	g.finished = true
+	g.Unlock()
 }
 
-func (g *game) isStopped() bool {
+func (g *game) isFinished() bool {
 	g.RLock()
-	defer g.RUnlock()
-	return g.stopped
+	finished := g.finished
+	g.RUnlock()
+
+	return finished
 }
 
-func (g *game) handleCollisions() {
+func (g *game) handleFruitCollisions() {
 	g.Lock()
 	defer g.Unlock()
 
-	snakeHead := g.snake.head()
+	head := g.snake.head()
 
 	for i, fruit := range g.fruit {
-		if snakeHead.X == fruit.X && snakeHead.Y == fruit.Y {
+		if head.X == fruit.X && head.Y == fruit.Y {
 			g.score += int(fruit.Value)
 			g.snake.eatFruit(fruit.Value)
 			g.fruit[i] = NewFruit(g.width, g.height)
+		}
+	}
+}
+
+func (g *game) checkSelfCollision() {
+	g.Lock()
+	defer g.Unlock()
+
+	head := g.snake.head()
+
+	for i := 1; i < len(g.snake.Parts); i++ {
+		part := g.snake.Parts[i]
+		if head.X == part.X && head.Y == part.Y {
+			g.finished = true
+			return
 		}
 	}
 }
@@ -115,13 +133,14 @@ func (g *game) run(wg *sync.WaitGroup) {
 	sleepTime := float32(1*time.Second) / float32(g.tickrate)
 
 	for {
-		if g.isStopped() {
+		if g.isFinished() {
 			break
 		}
 
-		g.handleCollisions()
+		g.handleFruitCollisions()
 		g.handleInput()
 		g.update()
+		g.checkSelfCollision()
 
 		g.outputChan <- GameState{
 			g.width,
@@ -129,6 +148,7 @@ func (g *game) run(wg *sync.WaitGroup) {
 			g.snake,
 			append([]Fruit{}, g.fruit...),
 			g.score,
+			g.finished,
 		}
 
 		time.Sleep(time.Duration(sleepTime))

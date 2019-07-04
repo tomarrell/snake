@@ -81,11 +81,11 @@ func TestEndGame(t *testing.T) {
 	e.getGame(game2)
 
 	e.EndGame(0)
-	assert.True(e.games[0].isStopped())
-	assert.False(e.games[1].isStopped())
+	assert.True(e.games[0].isFinished())
+	assert.False(e.games[1].isFinished())
 
 	e.EndGame(1)
-	assert.True(e.games[0].isStopped())
+	assert.True(e.games[0].isFinished())
 }
 
 func TestGameDestroy(t *testing.T) {
