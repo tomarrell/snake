@@ -44,7 +44,7 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gameID := uuid.New().String()
-	log.Println(gameID, "creating new game")
+	log.Println(gameID[:11], "creating new game")
 	s := signedStateResponse{
 		gameID,
 		ng.Width,
@@ -80,7 +80,7 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 
 	checkSign := vPayload{vr.GameID, vr.Width, vr.Height, vr.Score, vr.Fruit, vr.Snake}
 	if *signState(&checkSign) != *vr.Signature {
-		log.Println(vr.GameID, "invalid signature")
+		log.Println(vr.GameID[:11], "invalid signature")
 		http.Error(w, "invalid payload signature", http.StatusUnauthorized)
 		return
 	}
@@ -94,6 +94,7 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("%s validated game score: %d points with dimensions: %dx%d", vr.GameID[:11], g.Score, g.Width, g.Height)
 	s := signedStateResponse{
 		vr.GameID,
 		g.Width,
