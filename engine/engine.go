@@ -73,8 +73,8 @@ func (e *Engine) RunManagedGame(ID int, ticks []Tick) (*ManagedGame, error) {
 		return nil, errors.New("no managed game with given ID")
 	}
 
-	if !mg.run(ticks) {
-		return nil, errors.New("invalid tick path")
+	if ok, err := mg.run(ticks); !ok {
+		return nil, err
 	}
 
 	return mg, nil

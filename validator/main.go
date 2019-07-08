@@ -19,8 +19,8 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/new", newHandler).Methods(http.MethodPost)
-	r.HandleFunc("/validate", validatePath).Methods(http.MethodPost)
+	r.HandleFunc("/new", cors(newHandler)).Methods(http.MethodPost)
+	r.HandleFunc("/validate", cors(validatePath)).Methods(http.MethodPost)
 
 	p := ":" + *portPtr
 	log.Println("Starting server of port", p)
@@ -64,12 +64,11 @@ func newHandler(w http.ResponseWriter, r *http.Request) {
 
 // Validate a tick path reaching a piece of fruit
 func validatePath(w http.ResponseWriter, r *http.Request) {
-	e := engine.NewEngine()
 	var vr validateRequest
+	e := engine.NewEngine()
 
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&vr)
-	if err != nil {
+	if decoder.Decode(&vr) != nil {
 		http.Error(w, "invalid json body", http.StatusBadRequest)
 		return
 	}
@@ -107,4 +106,11 @@ func validatePath(w http.ResponseWriter, r *http.Request) {
 
 	s.Signature = signState(&vPayload{s.GameID, s.Width, s.Height, s.Score, s.Fruit, s.Snake})
 	writeJSON(w, s)
+}
+
+func cors(cb func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		cb(w, r)
+	}
 }

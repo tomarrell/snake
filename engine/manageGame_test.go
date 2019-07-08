@@ -27,8 +27,9 @@ func TestManagedGameRun(t *testing.T) {
 		{0, 1},
 	}
 
-	valid := mg.run(ticks)
+	valid, err := mg.run(ticks)
 
+	assert.NoError(err)
 	assert.True(valid)
 }
 
@@ -63,8 +64,9 @@ func TestManagedGameRun_2(t *testing.T) {
 		{1, 0},
 	}
 
-	valid := mg.run(ticks)
+	valid, err := mg.run(ticks)
 
+	assert.NoError(err)
 	assert.True(valid)
 }
 
