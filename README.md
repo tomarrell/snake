@@ -57,7 +57,7 @@ This will run the web adapter on port `8080`. You can test out the basic client 
 - [x] Input handling
 - [x] State output
 - [x] Fruit
-- [ ] Snake collisions with itself
+- [x] Snake collisions with itself
 
 #### Adapters
 - [x] Basic terminal interface
