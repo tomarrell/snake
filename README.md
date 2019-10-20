@@ -26,6 +26,7 @@ The core of the project can be found within `./engine`, with the adapters occupy
 
 ## Installation
 You can build your own adapter by importing `github.com/tomarrell/snake` and then using the exported methods there to build your own adapter on top of the simulation.
+Just make sure you have Go >= v1.11 with go modules support enabled.
 
 Alternatively, you can use one of the pre-built adapters. Currently built adapters are:
 - Terminal
@@ -37,8 +38,6 @@ In order to play around with the terminal adapter, run the following.
 > go get github.com/tomarrell/snake/term-snake
 > term-snake
 ```
-
-Just make sure you have your `$GOPATH` setup and `$PATH` pointing to `$GOPATH/bin`.
 
 To run a copy of of the included web adapter, run the following.
 ```bash
