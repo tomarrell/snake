@@ -64,5 +64,8 @@ This will run the web adapter on port `8080`. You can test out the basic client 
 - [x] Validator
 - [ ] Leaderboard
 
+## Contributing
+Contributing to this project is more than welcome! Please feel free to propose features as well by filing an issue [here](https://github.com/tomarrell/snake/issues).
+
 ## License
 Licensed under MIT or GPLv3.0, whichever you prefer.
