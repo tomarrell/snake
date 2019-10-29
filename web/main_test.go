@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -48,13 +49,13 @@ func TestCreate(t *testing.T) {
 	defer ws.Close()
 
 	var ack mAck
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
+	ws.WriteMessage(1, mustMarshal(json.Marshal(MessageNew{"new", 80, 80, 10})))
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
 	assert.Equal(newAckOk(), ack)
 
 	var gs engine.GameState
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
+	ws.WriteMessage(1, mustMarshal(json.Marshal(MessageNew{"new", 80, 80, 10})))
 
 	// Read first state back from engine
 	err = ws.ReadJSON(&gs)
@@ -80,7 +81,7 @@ func TestDestroy(t *testing.T) {
 	defer ws.Close()
 
 	var ack mAck
-	ws.WriteMessage(1, []byte("{ \"type\": \"new\", \"width\": 80, \"height\": 80, \"tick\": 10 }"))
+	ws.WriteMessage(1, mustMarshal(json.Marshal(MessageNew{"new", 80, 80, 10})))
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
 	assert.Equal(ack, newAckOk())
@@ -95,4 +96,15 @@ func TestDestroy(t *testing.T) {
 	err = ws.ReadJSON(&ack)
 	assert.NoError(err)
 	assert.Equal(ack, newAckOk())
+}
+
+type MessageNew struct {
+	Type   string `json:"type"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+	Tick   int    `json:"tick"`
+}
+
+func mustMarshal(v []byte, _ error) []byte {
+	return v
 }
