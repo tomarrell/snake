@@ -12,11 +12,6 @@ type newGameRequest struct {
 }
 
 // Validate game
-type tick struct {
-	VelX int `json:"velX"`
-	VelY int `json:"velY"`
-}
-
 type validateRequest struct {
 	GameID    string         `json:"gameId"`
 	Width     int            `json:"width"`

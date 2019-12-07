@@ -14,7 +14,6 @@ var (
 // Engine controls the entire set
 // of games being played within it
 type Engine struct {
-	inputChan    chan (KeyCode)
 	games        []*game
 	managedGames []*ManagedGame
 }
@@ -86,7 +85,7 @@ func (e *Engine) StartGame(ID int, outputChan chan (GameState)) (chan (GameState
 	var game *game
 
 	game, exists := e.getGame(ID)
-	if exists == false {
+	if !exists {
 		return nil, errors.New("no game with given ID")
 	}
 

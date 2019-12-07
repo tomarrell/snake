@@ -68,7 +68,7 @@ loop:
 		}
 
 		start := time.Now()
-		dur += time.Now().Sub(start)
+		dur += time.Since(start)
 	}
 
 	s.Fini()
