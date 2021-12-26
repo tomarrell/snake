@@ -5,16 +5,19 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/tomarrell/snake/engine"
 )
 
-const port = "8080"
+var (
+	secret = os.Getenv("SECRET")
+	port   = flag.String("port", "8080", "port to run the web server on")
+)
 
 func main() {
-	portPtr := flag.String("port", port, "port to run the web server on")
 	flag.Parse()
 
 	r := mux.NewRouter()
@@ -22,7 +25,7 @@ func main() {
 	r.HandleFunc("/new", cors(newHandler)).Methods(http.MethodPost)
 	r.HandleFunc("/validate", cors(validatePath)).Methods(http.MethodPost)
 
-	p := ":" + *portPtr
+	p := ":" + *port
 	log.Println("Starting server of port", p)
 	log.Fatal(http.ListenAndServe(p, r))
 }

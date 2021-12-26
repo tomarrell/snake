@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log"
-	"os"
 
 	"github.com/tomarrell/snake/engine"
 )
@@ -20,7 +19,6 @@ type vPayload struct {
 }
 
 func signState(state *vPayload) *string {
-	secret := os.Getenv("SECRET")
 	if secret == "" {
 		log.Println("WARNING: no env variable 'SECRET' provided, signatures will be insecure")
 	}
