@@ -1,3 +1,5 @@
+HASH := $(shell git show -s --format=%h)
+
 .PHONY: test
 test: ## runs all tests
 	go test -v -vet=all -failfast ./...
@@ -13,6 +15,12 @@ web: # Run the web adapter
 .PHONY: validator
 validator: # Run the validator adapter
 	go run ./validator
+
+.PHONY: push
+push: ## Push the image to my personal docker registry with the git hash as the tag
+	docker build -t tomarrell/personal:snake-$(HASH) -f Dockerfile.validator .
+	docker push tomarrell/personal:snake-$(HASH)
+	echo "snake-$(HASH)" | tr -d '\n' | tee /dev/tty | pbcopy
 
 .DEFAULT_GOAL := help
 
