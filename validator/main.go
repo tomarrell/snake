@@ -22,8 +22,8 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/new", cors(newHandler)).Methods(http.MethodPost)
-	r.HandleFunc("/validate", cors(validatePath)).Methods(http.MethodPost)
+	r.HandleFunc("/snake/new", cors(newHandler)).Methods(http.MethodPost)
+	r.HandleFunc("/snake/validate", cors(validatePath)).Methods(http.MethodPost)
 
 	p := ":" + *port
 	log.Println("Starting server of port", p)
